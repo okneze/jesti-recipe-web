@@ -1,25 +1,24 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useState} from 'react';
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 
+import Sheet from './Sheet';
+import Home from './Home';
+import data from './sheet_list.json'
 function App() {
+
+
+  const [sheets, setSheets] = useState<string[]>(data.files);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+        <Routes>
+          <Route path="/" element={<Home sheets={sheets} />} />
+          {sheets.sort().map((sheet) => (
+            <Route path={`sheet/${sheet}`} element={<Sheet path={sheet}/>} />
+          ))}
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
