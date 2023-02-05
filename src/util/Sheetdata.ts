@@ -2,6 +2,8 @@
 import Chord from "./Chord";
 import { stringSimilarity, stringToHash } from "./stringUtil";
 
+export type TransposeMode = "chord" | "key";
+
 class Sheetdata {
 
   id: number = -1;
@@ -108,6 +110,11 @@ class Sheetdata {
       max = Math.max(stringSimilarity(searchString, target), max)
     }
     return max
+  }
+
+  transpose(amount: number, mode: TransposeMode): Sheetdata {
+    // TODO
+    return this;
   }
 }
 
