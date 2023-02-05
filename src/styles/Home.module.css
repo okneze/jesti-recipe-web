@@ -1,0 +1,74 @@
+
+.cardbox {
+    position: absolute;
+    top: 54px;
+}
+
+.card {
+    display: inline-block;
+    width: 256px;
+    padding: 16px;
+    margin: 8px;
+
+    border-color: lightgray;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 2px;
+
+    text-decoration: none;
+
+}
+
+.card:hover {
+    border-color: #D42990;
+}
+
+.title {
+    color: rgb(36, 41, 47);
+    margin: 0 0 4px 0;
+    height: 40px;
+}
+
+.band {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    color: rgb(87, 96, 106);
+}
+
+.tags {
+    margin-left: 6px;
+}
+
+.icon {
+    height: 12px;
+    margin: 0 2px 0 6px;
+}
+
+.searchbar {
+    position: fixed;
+    z-index: 10;
+    display: inline-block;
+    padding: 2px;
+
+    background-color: white;
+
+    border-color: darkgray;
+    border-radius: 6px;
+    border-style: solid;
+    border-width: 2px;
+
+    left: 16px;
+    top: 16px;
+}
+
+.searchbar input {
+    width: 260px;
+    border: none;
+    margin: 2px;
+}
+
+.searchbar input:focus {
+    outline: none;
+}

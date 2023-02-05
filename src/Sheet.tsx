@@ -1,22 +1,15 @@
 import React, {useState, useEffect} from 'react';
+import styles from './styles/Sheet.module.css'
+import Sheetdata from './util/Sheetdata';
 
-function Sheet({path}: {path: string}) {
-  const [rawSheet, setRawSheet] = useState<string>("");
+function Sheet({data}: {data: Sheetdata}) {
 
-  // load the raw sheet
-  useEffect(() => {
-    fetchFile();
-  }, []);
-  function fetchFile() {
-    fetch(`/raw/${path}`)
-      .then((text) => text.text())
-      .then((res) => setRawSheet(res))
-      .catch((x) => console.error(x));
-  }
+  document.title = `Delyrium - ${data.title} - ${data.artist}`;
 
   return (
     <div>
-      {rawSheet}
+      {data.id}
+      {data.title}
     </div>
   );
 }

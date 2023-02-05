@@ -1,0 +1,92 @@
+
+.layout {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sheet {
+    font-family: 'Courier New', Courier, monospace;
+    white-space: pre;
+}
+
+.chords {
+    font-family: 'Courier New', Courier, monospace;
+    color: #D42990;
+    font-weight: 600;
+}
+
+.head {
+    margin: 1rem;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.head > div {
+    display: inline-block;
+    margin: 0 auto;
+}
+
+.head h2 {
+    font-size: 4rem;
+    display: inline-block;
+    margin: 0 2rem 0 0;
+}
+
+.head h3 {
+    font-size: 3rem;
+    display: inline-block;
+    font-weight: 400;
+    margin: 0 1rem 0 0;
+}
+
+.head .tags {
+    font-size: 1.5rem;
+    color: dimgrey;
+}
+
+.head button {
+    display: inline-block;
+    background-color: #D42990;
+    color: white;
+    border-radius: 10px;
+    padding: 10px 16px;
+    margin: 1rem;
+    font-weight: 500;
+    border: none;
+}
+
+.transpose .chords {
+    width: 3rem;
+    font-size: 1.5rem;
+    display: inline-block;
+    text-align: center;
+}
+
+.icon {
+    width: 3rem;
+    margin: 8px;
+}
+
+.homebutton {
+    position: fixed;
+    z-index: 10;
+}
+
+@media print {
+    .homebutton {
+        display: none;
+    }
+
+    .transpose {
+        display: none !important;
+    }
+
+    .head h2 {
+        font-size: 2.5rem;
+    }
+
+    .head h3 {
+        font-size: 1.5rem;
+    }
+}
