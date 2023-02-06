@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import { Link } from 'react-router-dom';
 import styles from './styles/Sheet.module.css'
 import Switch from './Switch';
-import Chord from './util/Chord';
 import Sheetdata, { TransposeMode } from './util/Sheetdata';
 
 function Sheet({data}: {data: Sheetdata}) {
@@ -17,6 +16,8 @@ function Sheet({data}: {data: Sheetdata}) {
     setSheet(old => old.transpose(amount, transposeMode));
     setOffset(old => old+amount);
   }
+
+  let lineID = 0;
 
   return (
     <>
@@ -39,61 +40,36 @@ function Sheet({data}: {data: Sheetdata}) {
           </div>
         </div>
         <div className={styles.sheet}>
-          {data.body.split("\n").map(line => {
+          {data.lyrics.split("\n").map(line => {
             if (line === "") {
-              return <br/>
+              lineID += 1;
+              return <br/>;
             } else if(line[0] === "#") {
               // ignore comments and shebang
-              return ""
+              return "";
             } else if(line[0] === "{") {
               // TODO: directives
-              return ""
+              return "";
             } else {
-              if (line.includes("[")) {
-                let chordLine = ""
-                let lyricLine = ""
-                let chordbuffer = ""
-                let ischord = false
-                let chordLength = 0
-                for (const chr of line) {
-                  if (chr === '[') {
-                    ischord = true
-                  } else if (chr === ']') {
-                    ischord = false
-                    // transpose
-                    const chord = new Chord(chordbuffer)
-                    chordbuffer = `${chord.transpose(offset).toString()} `
-                    chordLine += chordbuffer
-                    chordLength = chordbuffer.length
-                    chordbuffer = ""
-                  } else if (ischord) {
-                    chordbuffer += chr
-                  } else {
-                    lyricLine += chr
-                    if (chordLength === 0) {
-                      chordLine += " "
-                    } else {
-                      chordLength -= 1
-                    }
-                  }
+              let chordLine = "";
+              if(Object.keys(data.chords).includes(`${lineID}`)) {
+                for(const entry of data.chords[lineID].sort((a, b)  => a.column - b.column)) {
+                  // fill space left of chord, then add chord and one space on the right
+                  chordLine += " ".repeat(entry.column - chordLine.length);
+                  chordLine += entry.chord.transpose(offset).toString();
+                  chordLine += " ";
                 }
-                return (
-                  <>
-                    <span className={styles.chords}>{chordLine}</span>
-                    <br/>
-                    <span>{lyricLine}</span>
-                    <br/>
-                  </>
-                )
-              } else {
-                return (
-                  <>
-                    <span>{line}</span>
-                    <br/>
-                  </>
-                )
               }
+              lineID += 1;
+              return (
+                <>
+                  {chordLine !== "" && <><span className={styles.chords}>{chordLine}</span><br /></>}
+                  <span>{line}</span>
+                  <br/>
+                </>
+              )
             }
+
           })}
         </div>
       </div>

@@ -27,22 +27,23 @@ class Sheetdata {
   year: string = "";
 
   columns: number = 2;
-  body: string;
+  lyrics: string = "";
+  chords: {[row: number]: {column: number; chord: Chord}[]} = {};
 
   constructor(path: string, content: string) {
     this.id = stringToHash(path);
     this.path = path;
     this.slug = path.replace(".crd", "");
 
-    this.body = "";
-    for(let row of content.split("\n")) {
+    let lineID = 0;
+    for(let line of content.split("\n")) {
       // filter out comments & shebang
-      if(row.startsWith("#")) {
+      if(line.startsWith("#")) {
         continue;
       }
       // process directives
-      if(row.startsWith("{")) {
-        let directive = row.split("{", 2)[1].split("}")[0].replace(": ", ":").split(":")
+      if(line.startsWith("{")) {
+        let directive = line.split("{", 2)[1].split("}")[0].replace(": ", ":").split(":")
         switch (directive[0]) {
           case "album":
             this.album = directive[1];
@@ -95,11 +96,38 @@ class Sheetdata {
           case "meta":
             this.meta.push(directive[1]);
             break;
-          default:
-            this.body += `${row}\n`;
+          // default:
+            // TODO: Other directives
+            // this.lyrics += `${row}\n`;
         }
       } else {
-        this.body += `${row}\n`;
+        // preprocessing
+        let chordbuffer = ""
+        let ischord = false
+        let columnID = 0
+        for (const chr of line) {
+          if (chr === '[') {
+            ischord = true
+          } else if (chr === ']') {
+            ischord = false
+            // transpose
+            const chord = new Chord(chordbuffer)
+            let entry = {column: columnID, chord};
+            if(Object.keys(this.chords).includes(`${lineID}`)) {
+              this.chords = {...this.chords, [lineID]: [...this.chords[lineID], entry]};
+            } else {
+              this.chords = {...this.chords, [lineID]: [entry]}
+            }
+            chordbuffer = ""
+          } else if (ischord) {
+            chordbuffer += chr
+          } else {
+            this.lyrics += chr
+            columnID += 1;
+          }
+        }
+        lineID += 1;
+        this.lyrics += "\n";
       }
     }
   }
