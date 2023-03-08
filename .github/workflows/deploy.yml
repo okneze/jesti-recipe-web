@@ -18,11 +18,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+    - name: Update sheets
+      run: python scripts/setup.py ${{ secrets.CLOUD_PATH }}
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-        # cache: 'yarn'
 
     - name: Install
       run: yarn install
