@@ -55,7 +55,7 @@ function Sheet({data}: {data: Sheetdata}) {
               if(Object.keys(data.chords).includes(`${lineID}`)) {
                 for(const entry of data.chords[lineID].sort((a, b)  => a.column - b.column)) {
                   // fill space left of chord, then add chord and one space on the right
-                  chordLine += " ".repeat(entry.column - chordLine.length);
+                  chordLine += " ".repeat(Math.max(entry.column - chordLine.length, 0));
                   chordLine += entry.chord.transpose(offset).toString();
                   chordLine += " ";
                 }
