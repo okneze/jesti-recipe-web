@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
-import Sheetdata from "./Sheetdata";
+import {SheetType, parseSheet} from "./Sheetdata";
 
 export const useFetch = (paths: string[]) => {
-  const [data, setData] = useState<Sheetdata[]>([])
+  const [data, setData] = useState<SheetType[]>([])
   useMemo(() => {
     paths.forEach((path) => {
       fetch(`/raw/${path}`)
       .then((text) => text.text())
-      .then((res) => {setData(prev => [...prev, new Sheetdata(path, res)])})
+      .then((res) => {setData(prev => [...prev, parseSheet(path, res)])})
       .catch((x) => console.error(x));
     })
   }, [paths]);

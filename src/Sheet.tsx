@@ -1,19 +1,16 @@
 import React, {useState} from 'react';
 import reactStringReplace from 'react-string-replace';
 import styles from './styles/Sheet.module.css'
-import Sheetdata, { TransposeMode } from './util/Sheetdata';
+import {SheetType} from './util/Sheetdata';
 
-function Sheet({data}: {data: Sheetdata}) {
+function Sheet({data}: {data: SheetType}) {
 
   const [sheet, setSheet] = useState(data);
-  const [offset, setOffset] = useState(0);
-  const [transposeMode, setTransposeMode] = useState<TransposeMode>("key");
 
   document.title = `Delyrium - ${sheet.title} - ${sheet.artist}`;
 
   function transpose(amount: number) {
-    setSheet(old => old.transpose(amount, transposeMode));
-    setOffset(old => old+amount);
+    setSheet(old => ({...old, capo: (old.capo + amount) % 12}));
   }
 
   let lineID = 0;
@@ -27,13 +24,13 @@ function Sheet({data}: {data: Sheetdata}) {
           </div>
           <div className={styles.transpose}>
             <button onClick={() => {transpose(-1)}}>Transpose -1</button>
-            <span className={styles.chords} id="key">{data.key.toString()}</span>
+            <span className={styles.chords} id="key">{sheet.key.toString()}{sheet.capo >= 0 ? `+${sheet.capo}` : sheet.capo}</span>
             <button onClick={() => {transpose(+1)}}>Transpose +1</button>
             <span className={styles.tags}>{data.tags}</span>
           </div>
         </div>
         <div className={styles.sheet}>
-          {data.lyrics.split("\n").map((line, idx) => {
+          {sheet.lyrics.split("\n").map((line, idx) => {
             if (line === "") {
               lineID += 1;
               return <br key={idx}/>;
@@ -49,7 +46,7 @@ function Sheet({data}: {data: Sheetdata}) {
                 for(const entry of data.chords[lineID].sort((a, b)  => a.column - b.column)) {
                   // fill space left of chord, then add chord and one space on the right
                   chordLine += " ".repeat(Math.max(entry.column - chordLine.length, 0));
-                  chordLine += entry.chord.transpose(offset).toString();
+                  chordLine += entry.chord.transpose(sheet.capo).toString();
                   chordLine += " ";
                 }
               }

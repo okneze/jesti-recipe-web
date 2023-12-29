@@ -67,6 +67,7 @@
     font-size: 1.5rem;
     display: inline-block;
     text-align: center;
+    white-space: nowrap;
 }
 
 .icon {
