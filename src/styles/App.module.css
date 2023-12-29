@@ -1,0 +1,67 @@
+:root {
+  --yellow: #fffbdb;
+  --blue: #224870;
+  --red: #a3333d;
+  --orange: #ff7f51;
+  --light-blue: #00a6ed;
+  --light-yellow: #fffdf1;
+  --elevation-small: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  --elevation-high: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px, rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+  --header-height: calc(48px + 2 * 10px);
+  --footer-height: 20px;
+}
+
+@font-face {
+  font-family: Literata;
+  src: url("../assets/Literata.ttf");
+}
+
+body {
+  font-family: Literata;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  text-decoration: none;
+  color: var(--blue);
+  z-index: 2;
+}
+.header h1 {
+  margin: 0px;
+}
+
+.searchbar {
+  position: absolute;
+  display: inline-block;
+  padding: 2px;
+
+  background-color: white;
+
+  border-color: darkgray;
+  border-radius: 6px;
+  border-style: solid;
+  border-width: 2px;
+
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.searchbar input {
+  width: 260px;
+  border: none;
+  margin: 2px;
+}
+
+.searchbar input:focus {
+  outline: none;
+}
+
+/* MAIN */
+main {
+  min-height: calc(100dvh - var(--header-height) - var(--footer-height));
+  padding-top: var(--header-height);
+  background-color: var(--yellow);
+}

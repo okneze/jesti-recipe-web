@@ -2,17 +2,23 @@
 .layout {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 32px;
 }
 
 .sheet {
     font-family: 'Courier New', Courier, monospace;
     white-space: pre;
+    font-weight: 600;
 }
 
 .chords {
     font-family: 'Courier New', Courier, monospace;
     color: #D42990;
     font-weight: 600;
+}
+
+.highlight {
+    text-decoration: underline;
 }
 
 .head {

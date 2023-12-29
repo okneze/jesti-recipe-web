@@ -1,7 +1,9 @@
 
 .cardbox {
-    position: absolute;
-    top: 54px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 20px 0 20px;
 }
 
 .card {
@@ -10,21 +12,23 @@
     padding: 16px;
     margin: 8px;
 
-    border-color: lightgray;
-    border-radius: 6px;
-    border-style: solid;
-    border-width: 2px;
+    /* border-color: lightgray; */
+    background: #fffdf1;
+    color: #224870;
+    border: none;
+    border-radius: 16px;
+    box-shadow: var(--elevation-small);
 
     text-decoration: none;
+    transition: all 300ms;
 
 }
 
 .card:hover {
-    border-color: #D42990;
+    box-shadow: var(--elevation-high);
 }
 
 .title {
-    color: rgb(36, 41, 47);
     margin: 0 0 4px 0;
     height: 40px;
 }
@@ -33,8 +37,6 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-
-    color: rgb(87, 96, 106);
 }
 
 .tags {
@@ -46,29 +48,12 @@
     margin: 0 2px 0 6px;
 }
 
-.searchbar {
+header {
     position: fixed;
-    z-index: 10;
-    display: inline-block;
-    padding: 2px;
-
-    background-color: white;
-
-    border-color: darkgray;
-    border-radius: 6px;
-    border-style: solid;
-    border-width: 2px;
-
-    left: 16px;
-    top: 16px;
-}
-
-.searchbar input {
-    width: 260px;
-    border: none;
-    margin: 2px;
-}
-
-.searchbar input:focus {
-    outline: none;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background: var(--light-yellow);
+    box-shadow: var(--elevation-small);
 }
