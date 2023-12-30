@@ -63,7 +63,7 @@
 }
 
 .transpose .chords {
-    width: 3rem;
+    min-width: 6rem;
     font-size: 1.5rem;
     display: inline-block;
     text-align: center;

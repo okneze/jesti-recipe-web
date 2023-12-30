@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import reactStringReplace from 'react-string-replace';
 import styles from './styles/Sheet.module.css'
-import {SheetType} from './util/Sheetdata';
+import {SheetType, transposedKey} from './util/Sheetdata';
 
 function Sheet({data}: {data: SheetType}) {
 
@@ -24,7 +24,7 @@ function Sheet({data}: {data: SheetType}) {
           </div>
           <div className={styles.transpose}>
             <button onClick={() => {transpose(-1)}}>Transpose -1</button>
-            <span className={styles.chords} id="key">{sheet.key.toString()}{sheet.capo >= 0 ? `+${sheet.capo}` : sheet.capo}</span>
+            <span className={styles.chords} id="key">{sheet.key.toString()}{sheet.capo >= 0 ? `+${sheet.capo}` : sheet.capo}={transposedKey(sheet).toString()}</span>
             <button onClick={() => {transpose(+1)}}>Transpose +1</button>
             <span className={styles.tags}>{data.tags}</span>
           </div>

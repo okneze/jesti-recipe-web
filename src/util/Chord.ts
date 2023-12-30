@@ -3,8 +3,8 @@ export default class Chord {
   static SHARP = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
   static FLAT  = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
 
-  static FLAT_MAJORS = [5, 10, 3, 8, 1, 6]
-  static FLAT_MINORS = [2, 7, 0, 5, 10, 3]
+  static FLAT_MAJORS = [5, 10, 3, 8, 1]//6
+  static FLAT_MINORS = [2, 7, 0, 5, 10]//3
 
   private third: boolean;
   private base: string;

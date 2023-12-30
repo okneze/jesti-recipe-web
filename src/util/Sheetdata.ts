@@ -166,5 +166,10 @@ function matchSheet(sheet: SheetType, searchString: string) {
   return max
 }
 
-export { matchSheet, parseSheet };
+function transposedKey(sheet: SheetType) {
+  const key = new Chord(sheet.key.toString());
+  return key.transpose(sheet.capo);
+}
+
+export { matchSheet, parseSheet, transposedKey };
 export type { SheetType };
