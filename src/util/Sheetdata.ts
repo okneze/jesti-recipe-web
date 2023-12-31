@@ -25,7 +25,6 @@ type SheetType = {
 
   columns: number;
   lyrics: string;
-  chords: {[row: number]: {column: number; chord: Chord}[]};
 }
 
 function parseSheet(path: string, content: string) {
@@ -53,7 +52,6 @@ function parseSheet(path: string, content: string) {
 
     columns: 2,
     lyrics: "",
-    chords: {},
   };
 
   sheet.id = stringToHash(path);
@@ -126,33 +124,7 @@ function parseSheet(path: string, content: string) {
           // sheet.lyrics += `${row}\n`;
       }
     } else {
-      // preprocessing
-      let chordbuffer = ""
-      let ischord = false
-      let columnID = 0
-      for (const chr of line) {
-        if (chr === '[') {
-          ischord = true
-        } else if (chr === ']') {
-          ischord = false
-          // transpose
-          const chord = new Chord(chordbuffer, sheet.key);
-          let entry = {column: columnID, chord};
-          if(Object.keys(sheet.chords).includes(`${lineID}`)) {
-            sheet.chords = {...sheet.chords, [lineID]: [...sheet.chords[lineID], entry]};
-          } else {
-            sheet.chords = {...sheet.chords, [lineID]: [entry]}
-          }
-          chordbuffer = ""
-        } else if (ischord) {
-          chordbuffer += chr
-        } else {
-          sheet.lyrics += chr
-          columnID += 1;
-        }
-      }
-      lineID += 1;
-      sheet.lyrics += "\n";
+      sheet.lyrics += line + "\n";
     }
   }
   return sheet;

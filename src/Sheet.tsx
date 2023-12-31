@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import reactStringReplace from 'react-string-replace';
 import styles from './styles/Sheet.module.css'
 import {SheetType, transposedKey} from './util/Sheetdata';
+import Chord from './util/Chord';
+import classNames from 'classnames';
 
 function Sheet({data}: {data: SheetType}) {
 
@@ -13,7 +15,10 @@ function Sheet({data}: {data: SheetType}) {
     setSheet(old => ({...old, capo: (old.capo + amount) % 12}));
   }
 
-  let lineID = 0;
+  function parseChord(line: string|React.ReactNode[]) {
+    const chordClasses = classNames(styles.chordflow, styles.chords);
+    return reactStringReplace(line, /\[(.*?)\]/g, (value) => (<span className={styles.chordline}><span className={chordClasses}>{new Chord(value, sheet.key).transpose(sheet.capo).toString()}</span></span>))
+  }
 
   return (
       <div className={styles.layout}>
@@ -32,31 +37,31 @@ function Sheet({data}: {data: SheetType}) {
         <div className={styles.sheet}>
           {sheet.lyrics.split("\n").map((line, idx) => {
             if (line === "") {
-              lineID += 1;
               return <br key={idx}/>;
             } else if(line[0] === "#") {
               // ignore comments and shebang
-              return;
+              return (<></>);
             } else if(line[0] === "{") {
               // TODO: directives
-              return;
+              return (<></>);
             } else {
-              let chordLine = "";
-              if(Object.keys(data.chords).includes(`${lineID}`)) {
-                for(const entry of data.chords[lineID].sort((a, b)  => a.column - b.column)) {
-                  // fill space left of chord, then add chord and one space on the right
-                  chordLine += " ".repeat(Math.max(entry.column - chordLine.length, 0));
-                  chordLine += entry.chord.transpose(sheet.capo).toString();
-                  chordLine += " ";
-                }
+              const modifications: (string|React.ReactNode[])[] = [line];
+              // chord sequences first
+              const chordSequenceMatch = line.match(/\[(?:[^\]]*?\]\s*\[[^\]]*?)+\]/g);
+              if(chordSequenceMatch && chordSequenceMatch.length > 0) {
+                chordSequenceMatch.forEach((match) => {
+                  modifications.unshift(reactStringReplace(modifications[0], match, (value) => (<span className={styles.chordsequence}>{parseChord(value)}</span>)))
+                  console.log(modifications[0]);
+                });
               }
-              lineID += 1;
+              // parse remaining chords
+              modifications.unshift(parseChord(modifications[0]));
+              // underline
+              modifications.unshift(reactStringReplace(modifications[0], /_(.*?)_/g, (value) => (<span className={styles.highlight}>{value}</span>)))
               return (
-                <span key={idx}>
-                  {chordLine !== "" && <><span className={styles.chords}>{chordLine}</span><br /></>}
-                  <span>{reactStringReplace(line, /_(.*?)_/g, (value) => (<span className={styles.highlight}>{value}</span>))}</span>
-                  <br/>
-                </span>
+                <div key={idx}>
+                  {modifications[0]}
+                </div>
               )
             }
 
