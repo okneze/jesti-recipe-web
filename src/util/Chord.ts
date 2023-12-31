@@ -33,6 +33,9 @@ export default class Chord {
   }
 
   transpose(amount: number, ) {
+    if(this.index < 0) {
+      return this;
+    }
     const idx = (((this.index + amount) % 12) + 12) % 12;
     if (this.relativeKey) {
       const keyIdx = (((this.relativeKey.index + amount) % 12) + 12) % 12;

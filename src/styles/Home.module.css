@@ -57,4 +57,5 @@ header {
     padding: 10px;
     background: var(--light-yellow);
     box-shadow: var(--elevation-small);
+    z-index: 1;
 }

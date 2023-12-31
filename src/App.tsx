@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {BrowserRouter as Router, Route, Routes, Link} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Route, Routes, Link, useNavigate } from 'react-router-dom';
 
 import Sheet from './Sheet';
 import Home from './Home';
@@ -12,17 +12,24 @@ function App() {
   const [sheets] = useFetch(data.files);
   const [searchString, setSearchString] = useState("");
 
+  const [redirect, setRedirect] = useState("");
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (redirect !== ""){
+      navigate(redirect);
+      setRedirect("");
+    }
+  }, [redirect]);
+
+
   function clearSearchString() {
     setSearchString("");
   }
 
   return (
-    <Router>
+    <>
       <header>
-        <div className={styles.searchbar}>
-          {/* <Magnifier className={styles.icon} /> */}
-          <input onChange={(event) => setSearchString(event.target.value)} value={searchString} />
-        </div>
+        <input onChange={(event) => setSearchString(event.target.value)} onKeyDown={(event) => {event.key === 'Enter' && setRedirect("/")}} value={searchString} className={styles.searchbar} />
         <Link to="/" className={styles.header}>
           <h1>Delyrium</h1>
         </Link>
@@ -36,7 +43,7 @@ function App() {
         </Routes>
       </main>
       {/* <footer>FOOTER</footer> */}
-    </Router>
+    </>
   );
 }
 

@@ -35,7 +35,7 @@ body {
 .searchbar {
   position: absolute;
   display: inline-block;
-  padding: 2px;
+  padding: 4px;
 
   background-color: white;
 
@@ -46,16 +46,11 @@ body {
 
   left: 16px;
   top: 50%;
+  width: 260px;
   transform: translateY(-50%);
 }
 
-.searchbar input {
-  width: 260px;
-  border: none;
-  margin: 2px;
-}
-
-.searchbar input:focus {
+.searchbar:focus {
   outline: none;
 }
 
