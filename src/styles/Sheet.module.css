@@ -99,20 +99,20 @@
     }
 }
 
-.chordflow {
-    position: absolute;
-    top: 0;
+.chordblock {
+    display: inline-grid;
+    grid-template-rows: 1fr 1fr;
 }
 
-.chordline {
-    padding-top: 1em;
-    display: inline-block;
-    position: relative;
+.chordblock .chords {
+    padding-right: 0.5em;
+    grid-row: 1;
 }
 
-.chordsequence .chordflow {
-    position: relative;
-    top: -1em;
-    padding-right: 0.25em;
+.line>* {
+    vertical-align: bottom;
+}
 
+.line.empty .chordblock {
+    grid-template-rows: 1fr;
 }
