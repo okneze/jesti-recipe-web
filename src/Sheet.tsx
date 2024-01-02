@@ -30,6 +30,16 @@ function Sheet({data}: {data: SheetType}) {
     return [<div className={styles['chord-grid']}>{reactStringReplace(line, /\|([^|]*)/g, (value) => value !== "" && (<div className={styles['chord-bar']}>{parseChord(value)}</div>))}</div>]
   }
 
+  function directiveDefine(directive: string) {
+    let match = directive.match(/(?<={(define|chord): ).*(?=})/g);
+    if (!match) {
+      return ""
+    }
+    const name = match[0].split(" ", 1)[0];
+    const frets = match[0].match(/frets( [0-9xN]+)+/g)?.[0].replace("frets ", "").replaceAll(" ", "-");
+    return `${name}: ${frets}`;
+  }
+
   // skip empty lines before first lyrics/chords
   let skip = true;
   let directiveMode: DirectiveModes = "normal";
@@ -58,13 +68,8 @@ function Sheet({data}: {data: SheetType}) {
               blockClasses = classNames(blockClasses, styles.chorus);
             }
             return (<div className={blockClasses}>{block.split("\n").map((line, idx) => {
-              if (line === "") {
-                if(skip) {
-                  return (<></>);
-                }
-                return <br key={idx}/>;
-              } else if(line[0] === "#") {
-                // ignore comments and shebang
+              if(line === "" || line[0] === "#") {
+                // ignore comments and shebang and empty lines
                 return (<></>);
               } else if(line[0] === "{") {
                 // TODO: directives
@@ -77,6 +82,8 @@ function Sheet({data}: {data: SheetType}) {
                   case "{eog}":
                     directiveMode = "normal";
                     break;
+                  case line.match(/^{define:|^{chord:/)?.input:
+                    return (<div className={styles['chord-definition']}>{directiveDefine(line)}</div>);
                   default:
                     console.log('found directive', line);
                     break;
