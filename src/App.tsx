@@ -19,7 +19,7 @@ function App() {
       navigate(redirect);
       setRedirect("");
     }
-  }, [redirect]);
+  }, [redirect, navigate]);
 
 
   function clearSearchString() {

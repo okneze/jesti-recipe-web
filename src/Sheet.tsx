@@ -18,7 +18,7 @@ function Sheet({data}: {data: SheetType}) {
   }
 
   function parseBlock(line: string|React.ReactNode[]) {
-    return reactStringReplace(line, /(\[(?:[^\]]*)\][^\[]*)/g, (value) => (<span className={styles.chordblock}>{parseChord(value)}</span>))
+    return reactStringReplace(line, /(\[(?:[^\]]*)\][^[]*)/g, (value) => (<span className={styles.chordblock}>{parseChord(value)}</span>))
   }
 
   function parseChord(line: string|React.ReactNode[]) {

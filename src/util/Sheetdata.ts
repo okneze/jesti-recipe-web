@@ -58,7 +58,6 @@ function parseSheet(path: string, content: string) {
   sheet.path = path;
   sheet.slug = path.replace(".crd", "");
 
-  let lineID = 0;
   for(let line of content.split("\n")) {
     // filter out comments & shebang
     if(line.startsWith("#")) {
