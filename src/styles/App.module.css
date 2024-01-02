@@ -5,6 +5,7 @@
   --orange: #ff7f51;
   --light-blue: #00a6ed;
   --light-yellow: #fffdf1;
+  --pink: #D42990;
   --elevation-small: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   --elevation-high: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px, rgba(0, 0, 0, 0.24) 0px 3px 8px;
 
@@ -56,7 +57,7 @@ body {
 
 /* MAIN */
 main {
-  min-height: calc(100dvh - var(--header-height) - var(--footer-height));
+  min-height: calc(100dvh - var(--header-height));
   padding-top: var(--header-height);
   background-color: var(--yellow);
 }

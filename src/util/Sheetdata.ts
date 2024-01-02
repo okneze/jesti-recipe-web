@@ -119,9 +119,9 @@ function parseSheet(path: string, content: string) {
         case "meta":
           sheet.meta.push(directive[1]);
           break;
-        // default:
+        default:
           // TODO: Other directives
-          // sheet.lyrics += `${row}\n`;
+          sheet.lyrics += `${line}\n`;
       }
     } else {
       sheet.lyrics += line + "\n";
