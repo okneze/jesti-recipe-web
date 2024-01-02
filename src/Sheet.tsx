@@ -40,11 +40,7 @@ function Sheet({data}: {data: SheetType}) {
     return `${name}: ${frets}`;
   }
 
-  // skip empty lines before first lyrics/chords
-  let skip = true;
   let directiveMode: DirectiveModes = "normal";
-
-
 
   return (
       <div className={styles.layout}>
@@ -90,7 +86,6 @@ function Sheet({data}: {data: SheetType}) {
                 }
                 return (<></>);
               } else {
-                skip = false;
                 const empty = line.replaceAll(/\[(.*?)\]/g, "").length === 0;
                 const modifications: (string|React.ReactNode[])[] = [line];
 
