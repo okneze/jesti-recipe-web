@@ -109,6 +109,7 @@
 .chordblock .chords {
     padding-right: 0.5em;
     grid-row: 1;
+    user-select: none;
 }
 
 .line>* {
@@ -122,6 +123,8 @@
 .chord-grid {
     display: grid;
     grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    position: relative;
 }
 
 .chord-bar {
@@ -129,15 +132,22 @@
     padding: 0 0.5em;
     display: grid;
     grid-auto-flow: column;
+    position: relative;
 }
 
-.chord-bar:last-child {
+.chord-bar:last-child,
+.bar-eorep:last-child {
     border-right: 2px solid var(--pink);
 }
 
 .block {
     break-inside: avoid;
     margin-bottom: 1em;
+    user-select: none;
+}
+
+.block .line + .line {
+    margin-top: 0.25em;
 }
 
 .chorus {
@@ -147,4 +157,55 @@
 
 .chord-definition {
     font-style: italic;
+}
+
+/* last double bar of the line */
+.bar-double, .bar-eorep {
+    position: absolute;
+    height: 100%;
+    right: 0;
+}
+
+.chord-bar.bar-double {
+    position: relative;
+    border-left: 2px solid transparent;
+}
+
+.bar-double::after {
+    content: "";
+    position: absolute;
+    border-left: 2px solid var(--pink);
+    height: 100%;
+    left: 0px;
+}
+
+.bar-double::before {
+    content: "";
+    position: absolute;
+    border-left: 2px solid var(--pink);
+    height: 100%;
+    left: -4px;
+}
+
+.chord-bar.bar-eorep {
+    position: relative;
+    border-left: 2px solid transparent;
+}
+
+.bar-sorep::before, .bar-esorep::before {
+    content: ":";
+    position: absolute;
+    color: var(--pink);
+    font-weight: 600;
+    top: -0.125em;
+    left: 1px;
+}
+
+.bar-eorep::after, .bar-esorep::after {
+    content: ":";
+    position: absolute;
+    color: var(--pink);
+    font-weight: 600;
+    top: -0.125em;
+    left: -7px;
 }
