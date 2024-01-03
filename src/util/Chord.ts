@@ -15,7 +15,7 @@ export default class Chord {
 
   constructor(text: string, key?: Chord) {
     this.relativeKey = key;
-    text = text.replace("H", "B").replace("h", "b")
+    text = text.replace(/^H/, "B").replace(/^h/, "b");
     this.third = /^[A-G]$/.test(text.charAt(0))
     if (text.length === 1) {
       this.base = text
@@ -32,7 +32,7 @@ export default class Chord {
     this.index = Chord.SHARP.includes(this.base) ? Chord.SHARP.indexOf(this.base) : Chord.FLAT.indexOf(this.base)
   }
 
-  transpose(amount: number, ) {
+  transpose(amount: number) {
     if(this.index < 0) {
       return this;
     }
@@ -51,16 +51,20 @@ export default class Chord {
         this.base = Chord.SHARP[idx]
       }
     }
-    // console.log(idx, this.third)
+
     // split bass into separate chord on "/" and reapply on addition
-    // if (this.#addition.includes("/")) {
-    //   const bass = new Chord(this.#addition.split("/", 1)[1])
-    //   this.#addition = `${this.#addition.split("/", 1)[0]}/${bass.transpose(amount).toString()}`
-    // }
+    if (this.addition.includes("/")) {
+      const split = this.addition.split("/", 2);
+      const bass = new Chord(split[1], this.relativeKey);
+      this.addition = `${split[0]}/${bass.transpose(amount).toString()}`
+    }
     return this
   }
 
   toString() {
+    if(this.base === "*") {
+      return this.addition;
+    }
     return `${this.third ? this.base : this.base.toLowerCase()}${this.addition}`
   }
 
