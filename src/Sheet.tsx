@@ -5,6 +5,7 @@ import {SheetType, transposedKey} from './util/Sheetdata';
 import Chord from './util/Chord';
 import classNames from 'classnames';
 import useLocalstorage from './util/useLocalstorage';
+import {Parser} from './util/Parser';
 
 type DirectiveModes = "normal" | "grid";
 
@@ -19,61 +20,10 @@ function Sheet({data}: {data: SheetType}) {
     setSheet(old => ({...old, capo: (old.capo + amount) % 12}));
   }
 
-  function parseBlock(line: string|React.ReactNode[]) {
-    return reactStringReplace(line, /(\[(?:[^\]]*)\][^[]*)/g, (value) => (
-      <span className={styles.chordblock}>{parseChord(value)}</span>
-    ));
+  function transposeChord(chord: string) {
+    return new Chord(chord, sheet.key).transpose(originalKey ? 0 : sheet.capo).toString();
   }
-
-  function parseChord(line: string|React.ReactNode[]) {
-    const chordClasses = classNames(styles.chordflow, styles.chords);
-    return reactStringReplace(line, /\[(.*?)\]/g, (value) => (
-      <div className={chordClasses}>
-        {new Chord(value, sheet.key).transpose(originalKey ? 0 : sheet.capo).toString()}
-      </div>
-    ));
-  }
-
-  function parseGrid(line: string): React.ReactNode[] {
-    // special bars
-    const classes: Record<number, string> = {};
-    const bars = /(?<double>\|\|)|(?<esorep>:\|:)|(?<sorep>\|:)|(?<eorep>:\|)/g;
-    let off = 0;
-    for(const match of line.matchAll(bars)) {
-      const cls = Object.entries(match.groups ?? []).reduce((prev, obj) => obj[1] !== undefined ? obj[0] : prev, "");
-      if(match.index !== undefined) {classes[match.index - off] = styles[`bar-${cls}`]};
-      off += match[0].length - 1;
-    }
-    line = line.replaceAll(bars, "|");
-    function getClasses(id: number) {
-      return Object.keys(classes).includes(`${id}`) ? classes[id] : undefined;
-    }
-    let barCounter = 0;
-    return [<div className={styles['chord-grid']}>{
-      reactStringReplace(line, /\|([^|]*)/g, (value, _, offset) => {
-        barCounter += 1;
-        if (value !== "") {
-          return (
-            <div className={classNames(styles['chord-bar'], getClasses(offset + barCounter - 1))}>
-              {parseChord(value)}
-            </div>
-          )
-        } else if(getClasses(offset + barCounter - 1)) {
-          return (<div className={classNames(getClasses(offset + barCounter - 1))}></div>)
-        }
-      })
-    }</div>]
-  }
-
-  function directiveDefine(directive: string) {
-    let match = directive.match(/(?<={(define|chord): ).*(?=})/g);
-    if (!match) {
-      return ""
-    }
-    const name = match[0].split(" ", 1)[0];
-    const frets = match[0].match(/frets( [0-9xN]+)+/g)?.[0].replace("frets ", "").replaceAll(" ", "-");
-    return `${name}: ${frets}`;
-  }
+  const parser = new Parser(transposeChord);
 
   let directiveMode: DirectiveModes = "normal";
 
@@ -118,7 +68,7 @@ function Sheet({data}: {data: SheetType}) {
                     directiveMode = "normal";
                     break;
                   case line.match(/^{define:|^{chord:/)?.input:
-                    return (<div className={styles['chord-definition']}>{directiveDefine(line)}</div>);
+                    return (<div className={styles['chord-definition']}>{parser.directiveDefine(line)}</div>);
                   default:
                     console.log('found directive', line);
                     break;
@@ -129,10 +79,10 @@ function Sheet({data}: {data: SheetType}) {
                 const modifications: (string|React.ReactNode[])[] = [line];
 
                 if(directiveMode === 'grid') {
-                  modifications.unshift(parseGrid(line));
+                  modifications.unshift(parser.parseGrid(line));
                 } else {
                   // parse chords
-                  modifications.unshift(parseBlock(modifications[0]));
+                  modifications.unshift(parser.parseBlock(modifications[0]));
                   // underline
                   modifications.unshift(reactStringReplace(modifications[0], /_(.*?)_/g, (value) => (<span className={styles.highlight}>{value}</span>)))
                 }
