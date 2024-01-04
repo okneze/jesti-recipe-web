@@ -13,8 +13,8 @@
     margin: 8px;
 
     /* border-color: lightgray; */
-    background: #fffdf1;
-    color: #224870;
+    background: white;
+    color: var(--blue);
     border: none;
     border-radius: 16px;
     box-shadow: var(--elevation-small);
@@ -38,6 +38,7 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    font-family: Milonga;
 }
 
 .tags {
@@ -47,15 +48,4 @@
 .icon {
     height: 12px;
     margin: 0 2px 0 6px;
-}
-
-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 10px;
-    background: var(--light-yellow);
-    box-shadow: var(--elevation-small);
-    z-index: 1;
 }

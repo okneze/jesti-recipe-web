@@ -18,20 +18,47 @@
   src: url("../assets/Literata.ttf");
 }
 
+@font-face {
+  font-family: Milonga;
+  src: url("../assets/Milonga-Regular.ttf");
+}
+
 body {
   font-family: Literata;
+  background-color: var(--light-yellow);
 }
 
 /* HEADER */
 .header {
-  text-align: center;
   text-decoration: none;
   color: var(--blue);
-  z-index: 2;
 }
-.header h1 {
+header h1 {
+  font-family: Milonga;
   margin: 0px;
+  width: 100%;
+  text-align: center;
 }
+header h1 span {
+  font-size: 0.75em;
+  white-space: pre;
+}
+header {
+  /* position: fixed;
+  top: 0;
+  left: 0;
+  right: 0; */
+  padding: 10px;
+  background: var(--yellow);
+  /* box-shadow: var(--elevation-small); */
+  /* z-index: 1; */
+  color: var(--blue);
+
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 
 .searchbar {
   position: absolute;
@@ -58,6 +85,13 @@ body {
 /* MAIN */
 main {
   min-height: calc(100dvh - var(--header-height));
-  padding-top: var(--header-height);
-  background-color: var(--yellow);
+  /* padding-top: var(--header-height); */
+  padding-bottom: 4rem;
+}
+
+.magnifier {
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--blue);
 }

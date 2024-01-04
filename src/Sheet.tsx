@@ -6,6 +6,8 @@ import Chord from './util/Chord';
 import classNames from 'classnames';
 import useLocalstorage from './util/useLocalstorage';
 import {Parser} from './util/Parser';
+import {ReactComponent as PlusSVG} from "./assets/icons/plus.svg";
+import {ReactComponent as MinusSVG} from "./assets/icons/minus.svg";
 
 type DirectiveModes = "normal" | "grid";
 
@@ -30,14 +32,10 @@ function Sheet({data}: {data: SheetType}) {
   return (
       <div className={styles.layout}>
         <div className={styles.head}>
-          <div>
-            <h2>{sheet.title}</h2>
-            <h3>{sheet.artist}</h3>
-          </div>
           <div className={styles.transpose}>
-            <button onClick={() => {transpose(-1)}}>Transpose -1</button>
+            <button onClick={() => {transpose(-1)}}><MinusSVG /></button>
             <span className={styles.chords} id="key">{sheet.key.toString()}{sheet.capo >= 0 ? `+${sheet.capo}` : sheet.capo}={transposedKey(sheet).toString()}</span>
-            <button onClick={() => {transpose(+1)}}>Transpose +1</button>
+            <button onClick={() => {transpose(+1)}}><PlusSVG /></button>
             <span className={styles.tags}>{data.tags}</span>
             <label>
               Original
