@@ -4,12 +4,14 @@ import styles from './styles/Sheet.module.css'
 import {SheetType, transposedKey} from './util/Sheetdata';
 import Chord from './util/Chord';
 import classNames from 'classnames';
+import useLocalstorage from './util/useLocalstorage';
 
 type DirectiveModes = "normal" | "grid";
 
 function Sheet({data}: {data: SheetType}) {
 
   const [sheet, setSheet] = useState(data);
+  const [originalKey, setOriginalKey] = useLocalstorage<boolean>("originalKeyToggle", false);
 
   document.title = `Delyrium - ${sheet.title} - ${sheet.artist}`;
 
@@ -18,12 +20,18 @@ function Sheet({data}: {data: SheetType}) {
   }
 
   function parseBlock(line: string|React.ReactNode[]) {
-    return reactStringReplace(line, /(\[(?:[^\]]*)\][^[]*)/g, (value) => (<span className={styles.chordblock}>{parseChord(value)}</span>))
+    return reactStringReplace(line, /(\[(?:[^\]]*)\][^[]*)/g, (value) => (
+      <span className={styles.chordblock}>{parseChord(value)}</span>
+    ));
   }
 
   function parseChord(line: string|React.ReactNode[]) {
     const chordClasses = classNames(styles.chordflow, styles.chords);
-    return reactStringReplace(line, /\[(.*?)\]/g, (value) => (<div className={chordClasses}>{new Chord(value, sheet.key).transpose(sheet.capo).toString()}</div>))
+    return reactStringReplace(line, /\[(.*?)\]/g, (value) => (
+      <div className={chordClasses}>
+        {new Chord(value, sheet.key).transpose(originalKey ? 0 : sheet.capo).toString()}
+      </div>
+    ));
   }
 
   function parseGrid(line: string): React.ReactNode[] {
@@ -81,6 +89,10 @@ function Sheet({data}: {data: SheetType}) {
             <span className={styles.chords} id="key">{sheet.key.toString()}{sheet.capo >= 0 ? `+${sheet.capo}` : sheet.capo}={transposedKey(sheet).toString()}</span>
             <button onClick={() => {transpose(+1)}}>Transpose +1</button>
             <span className={styles.tags}>{data.tags}</span>
+            <label>
+              Original
+              <input type="checkbox" checked={originalKey} onChange={(e) => {setOriginalKey((e.target as HTMLInputElement).checked)}} />
+            </label>
           </div>
         </div>
         <div className={styles.sheet} style={{"--columns": sheet.columns}}>
