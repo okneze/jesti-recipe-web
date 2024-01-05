@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import styles from './styles/Home.module.css'
@@ -16,14 +16,17 @@ type Props = {
 
 function Home({sheets, search, callbacks}: Props) {
   document.title = "Delyrium";
-  callbacks.setTitle("Delyrium");
-  callbacks.setArtist("");
 
   if (search !== "") {
     sheets.sort((a,b) => {return matchSheet(b, search) - matchSheet(a, search)});
   } else {
     sheets.sort((a,b) => a.title.localeCompare(b.title));
   }
+
+  useEffect(() => {
+    callbacks.setTitle("Delyrium");
+    callbacks.setArtist("");
+  }, [callbacks])
 
   return (
     <div className={styles.cardbox}>

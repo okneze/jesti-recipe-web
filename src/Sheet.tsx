@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import reactStringReplace from 'react-string-replace';
 import styles from './styles/Sheet.module.css'
 import {SheetType, transposedKey} from './util/Sheetdata';
@@ -24,8 +24,11 @@ function Sheet({data, callbacks}: Props) {
   const [originalKey, setOriginalKey] = useLocalstorage<boolean>("originalKeyToggle", false);
 
   document.title = `Delyrium - ${sheet.title} - ${sheet.artist}`;
-  callbacks.setTitle(sheet.title);
-  callbacks.setArtist(sheet.artist);
+
+  useEffect(() => {
+    callbacks.setTitle(sheet.title);
+    callbacks.setArtist(sheet.artist);
+  }, [callbacks, sheet]);
 
   function transpose(amount: number) {
     setSheet(old => ({...old, capo: (old.capo + amount) % 12}));
