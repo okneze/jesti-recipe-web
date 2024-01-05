@@ -17,7 +17,7 @@ type SheetType = {
   meta: string[];
   sorttitle: string;
   subtitle: string;
-  tags: string;
+  tags: string[];
   tempo: string;
   time: string;
   title: string;
@@ -44,7 +44,7 @@ function parseSheet(path: string, content: string) {
     meta: [],
     sorttitle: "",
     subtitle: "",
-    tags: "",
+    tags: [],
     tempo: "",
     time: "",
     title: "",
@@ -98,7 +98,7 @@ function parseSheet(path: string, content: string) {
           sheet.subtitle = directive[1];
           break;
         case "tags":
-          sheet.tags = directive[1];
+          sheet.tags = directive[1].replace(", ", ",").split(",");
           break;
         case "tempo":
           sheet.tempo = directive[1];
@@ -131,8 +131,8 @@ function parseSheet(path: string, content: string) {
 
 function matchSheet(sheet: SheetType, searchString: string) {
   let max = 0;
-  for(const target of [sheet.album, sheet.artist, sheet.composer, sheet.copyright, sheet.duration, sheet.lyricist, sheet.meta.join(", "), sheet.slug, sheet.sorttitle, sheet.subtitle, sheet.tags, sheet.title, sheet.year]) {
-    max = Math.max(stringSimilarity(searchString, target), max)
+  for(const target of [sheet.album, sheet.artist, sheet.composer, sheet.copyright, sheet.duration, sheet.lyricist, sheet.meta.join(", "), sheet.slug, sheet.sorttitle, sheet.subtitle, sheet.tags.join(", "), sheet.title, sheet.year]) {
+    max = Math.max(stringSimilarity(searchString, target), max);
   }
   return max
 }

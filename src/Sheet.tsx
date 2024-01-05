@@ -6,8 +6,7 @@ import Chord from './util/Chord';
 import classNames from 'classnames';
 import useLocalstorage from './util/useLocalstorage';
 import {Parser} from './util/Parser';
-import {ReactComponent as PlusSVG} from "./assets/icons/plus.svg";
-import {ReactComponent as MinusSVG} from "./assets/icons/minus.svg";
+import { Icon } from './Icon';
 
 type DirectiveModes = "normal" | "grid";
 type Props = {
@@ -22,6 +21,7 @@ function Sheet({data, callbacks}: Props) {
 
   const [sheet, setSheet] = useState(data);
   const [originalKey, setOriginalKey] = useLocalstorage<boolean>("originalKeyToggle", false);
+  const icon = new Icon();
 
   document.title = `Delyrium - ${sheet.title} - ${sheet.artist}`;
 
@@ -45,10 +45,10 @@ function Sheet({data, callbacks}: Props) {
       <div className={styles.layout}>
         <div className={styles.head}>
           <div className={styles.transpose}>
-            <button onClick={() => {transpose(-1)}}><MinusSVG /></button>
+            <button onClick={() => {transpose(-1)}} className={styles['transpose-button']}>{icon.get("minus")}</button>
             <span className={styles.chords} id="key">{sheet.key.toString()}{sheet.capo >= 0 ? `+${sheet.capo}` : sheet.capo}={transposedKey(sheet).toString()}</span>
-            <button onClick={() => {transpose(+1)}}><PlusSVG /></button>
-            <span className={styles.tags}>{data.tags}</span>
+            <button onClick={() => {transpose(+1)}} className={styles['transpose-button']}>{icon.get("plus")}</button>
+            <span className={styles.tags}>{data.tags.map((tag) => icon.get(tag))}</span>
             <label>
               Original
               <input type="checkbox" checked={originalKey} onChange={(e) => {setOriginalKey((e.target as HTMLInputElement).checked)}} />
@@ -56,7 +56,7 @@ function Sheet({data, callbacks}: Props) {
           </div>
         </div>
         <div className={styles.sheet} style={{"--columns": sheet.columns}}>
-          {sheet.lyrics.split("\n\n").map((block, blockidx) => {
+          {sheet.lyrics.split("\n\n").map((block) => {
             let blockClasses = styles.block;
             // peek what comes next
             if(block.match(/^[ \t]{1,4}|{soc}|{start_of_chorus}/g)) {

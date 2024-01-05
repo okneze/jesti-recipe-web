@@ -3,7 +3,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    padding: 20px 0 20px;
+    padding: 20px 32px;
 }
 
 .card {
@@ -32,6 +32,7 @@
     margin: 0 0 4px 0;
     height: 40px;
     line-height: 1em;
+    letter-spacing: -0.0375em;
 }
 
 .band {
@@ -41,11 +42,9 @@
     font-family: Milonga;
 }
 
-.tags {
-    margin-left: 6px;
-}
-
-.icon {
-    height: 12px;
-    margin: 0 2px 0 6px;
+.band svg {
+    width: 1em;
+    height: 1em;
+    color: var(--blue);
+    padding-left: 0.5em;
 }

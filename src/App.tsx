@@ -33,12 +33,14 @@ function App() {
   return (
     <>
       <header>
-        <Link to="/" className={styles.header}>
-          <HouseSVG />
-        </Link>
-        <button onClick={() => setShowSearch((show) => !show)} className={styles.magnifier}><MagnifierSVG /></button>
-        {showSearch && <input onChange={(event) => setSearchString(event.target.value)} onKeyDown={(event) => {event.key === 'Enter' && setRedirect("/")}} value={searchString} className={styles.searchbar} />}
-        <h1>{title}{artist !== "" && <>- <span>{artist}</span></>}</h1>
+        <div className={styles['header-wrapper']}>
+          <Link to="/" className={styles.home}>
+            <HouseSVG />
+          </Link>
+          <button onClick={() => setShowSearch((show) => !show)} className={styles.magnifier}><MagnifierSVG /></button>
+          {showSearch && <input onChange={(event) => setSearchString(event.target.value)} onKeyDown={(event) => {event.key === 'Enter' && setRedirect("/")}} value={searchString} className={styles.searchbar} />}
+          <h1>{title}{artist !== "" && <> - <span>{artist}</span></>}</h1>
+        </div>
       </header>
       <main className={styles.main}>
         <Routes>

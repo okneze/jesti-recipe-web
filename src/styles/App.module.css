@@ -11,6 +11,8 @@
 
   --header-height: calc(48px + 2 * 10px);
   --footer-height: 20px;
+
+  --sans: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 @font-face {
@@ -24,35 +26,34 @@
 }
 
 body {
-  font-family: Literata;
+  font-family: var(--sans);
   background-color: var(--light-yellow);
 }
 
 /* HEADER */
-.header {
+.home {
   text-decoration: none;
   color: var(--blue);
 }
-header h1 {
+header {
+  background: var(--yellow);
+  color: var(--blue);
+
+}
+.header-wrapper h1 {
   font-family: Milonga;
   margin: 0px;
   width: 100%;
   text-align: center;
 }
-header h1 span {
+.header-wrapper h1 span {
   font-size: 0.75em;
   white-space: pre;
 }
-header {
-  /* position: fixed;
-  top: 0;
-  left: 0;
-  right: 0; */
-  padding: 10px;
-  background: var(--yellow);
-  /* box-shadow: var(--elevation-small); */
-  /* z-index: 1; */
-  color: var(--blue);
+.header-wrapper {
+  padding: 10px 32px;
+  max-width: 1200px;
+  margin: 0 auto;
 
   display: flex;
   gap: 0.5rem;

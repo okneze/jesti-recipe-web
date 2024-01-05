@@ -7,14 +7,26 @@
 
 .sheet {
     --columns: 1;
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family: var(--sans);
     font-weight: 500;
     font-size: 1.125rem;
     column-count: var(--columns);
 }
 
+@media (max-width: 900px) {
+    .sheet {
+        column-count: max(1, calc(var(--columns) - 1));
+    }
+}
+
+@media (max-width: 600px) {
+    .sheet {
+        column-count: 1;
+    }
+}
+
 .chords {
-    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    font-family: var(--sans);
     color: var(--pink);
     font-weight: 600;
 }
@@ -30,11 +42,6 @@
     flex-direction: column;
 }
 
-.head > div {
-    display: inline-block;
-    margin: 0 auto;
-}
-
 .head h2 {
     font-size: 4rem;
     display: inline-block;
@@ -48,13 +55,14 @@
     margin: 0 1rem 0 0;
 }
 
-.head .tags {
-    font-size: 1.5rem;
-    color: dimgrey;
+.transpose {
+    display: flex;
+    align-items: center;
+    margin: 0 auto;
 }
 
-.head button {
-    display: inline-block;
+.transpose-button {
+    display: flex;
     background-color: var(--pink);
     color: white;
     border-radius: 100px;
@@ -62,6 +70,11 @@
     margin: 0.5rem;
     font-weight: 500;
     border: none;
+    width: 3em;
+    height: 3em;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
 }
 
 .transpose .chords {

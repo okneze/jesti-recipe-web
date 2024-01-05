@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import styles from './styles/Home.module.css'
 import {SheetType, matchSheet} from './util/Sheetdata';
+import { Icon } from './Icon';
 
 type Props = {
   sheets: SheetType[],
@@ -23,10 +24,12 @@ function Home({sheets, search, callbacks}: Props) {
     sheets.sort((a,b) => a.title.localeCompare(b.title));
   }
 
+  const icon = new Icon();
+
   useEffect(() => {
     callbacks.setTitle("Delyrium");
     callbacks.setArtist("");
-  }, [callbacks])
+  }, [callbacks]);
 
   return (
     <div className={styles.cardbox}>
@@ -37,7 +40,7 @@ function Home({sheets, search, callbacks}: Props) {
               <h3 className={styles.title}>{sheet.title}</h3>
               <div className={styles.band}>
                 {sheet.artist}
-                {/* {iconifyTags(sheet.frontmatter.tags ?? "")} */}
+                {sheet.tags.map((tag) => icon.get(tag))}
               </div>
             </Link>
           )
