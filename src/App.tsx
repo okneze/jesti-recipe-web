@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Routes, Link, useNavigate, useLocation } from 'react-router-dom';
+import { Route, Routes, Link, useNavigate } from 'react-router-dom';
 
 import Sheet from './Sheet';
 import Home from './Home';
@@ -26,22 +26,6 @@ function App() {
     }
   }, [redirect, navigate]);
 
-  const location = useLocation();
-  useEffect(() => {
-    if(location.pathname === "/") {
-      setTitle("Delyrium");
-      setArtist("");
-    } else {
-      const slug = location.pathname.replace(/^\/sheet\//, "");
-      const activeSheet = sheets.find((sheet) => sheet.slug === slug);
-      if(activeSheet) {
-        setTitle(activeSheet.title);
-        setArtist(activeSheet.artist);
-      }
-    }
-  });
-
-
   function clearSearchString() {
     setSearchString("");
   }
@@ -58,9 +42,9 @@ function App() {
       </header>
       <main className={styles.main}>
         <Routes>
-          <Route path="/" element={<Home sheets={sheets} search={searchString} clear={clearSearchString} />} />
+          <Route path="/" element={<Home sheets={sheets} search={searchString} callbacks={{clear: clearSearchString, setTitle, setArtist}} />} />
           {sheets.map((sheet, idx) => (
-            <Route path={`sheet/${sheet.slug}`} element={<Sheet data={sheet} />} key={idx} />
+            <Route path={`sheet/${sheet.slug}`} element={<Sheet data={sheet} callbacks={{setTitle, setArtist}} />} key={idx} />
           ))}
         </Routes>
       </main>

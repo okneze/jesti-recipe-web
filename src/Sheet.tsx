@@ -10,13 +10,22 @@ import {ReactComponent as PlusSVG} from "./assets/icons/plus.svg";
 import {ReactComponent as MinusSVG} from "./assets/icons/minus.svg";
 
 type DirectiveModes = "normal" | "grid";
+type Props = {
+  data: SheetType;
+  callbacks: {
+    setTitle: (title: string) => void;
+    setArtist: (artist: string) => void
+  }
+};
 
-function Sheet({data}: {data: SheetType}) {
+function Sheet({data, callbacks}: Props) {
 
   const [sheet, setSheet] = useState(data);
   const [originalKey, setOriginalKey] = useLocalstorage<boolean>("originalKeyToggle", false);
 
   document.title = `Delyrium - ${sheet.title} - ${sheet.artist}`;
+  callbacks.setTitle(sheet.title);
+  callbacks.setArtist(sheet.artist);
 
   function transpose(amount: number) {
     setSheet(old => ({...old, capo: (old.capo + amount) % 12}));
