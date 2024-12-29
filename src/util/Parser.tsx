@@ -11,15 +11,15 @@ export class Parser {
     }
 
     parseBlock(line: string|React.ReactNode[]) {
-        return reactStringReplace(line, /(\[(?:[^\]]*)\][^[]*)/g, (value) => (
-            <span className={styles.chordblock}>{this.parseChord(value)}</span>
+        return reactStringReplace(line, /(\[(?:[^\]]*)\][^[]*)/g, (value, idx) => (
+            <span className={styles.chordblock} key={idx}>{this.parseChord(value)}</span>
         ));
     }
 
     parseChord(line: string|React.ReactNode[]) {
         const chordClasses = classNames(styles.chordflow, styles.chords);
-        return reactStringReplace(line, /\[(.*?)\]/g, (value) => (
-            <div className={chordClasses}>
+        return reactStringReplace(line, /\[(.*?)\]/g, (value, idx) => (
+            <div className={chordClasses} key={idx}>
                 {this.transpose(value)}
             </div>
         ));
@@ -41,16 +41,16 @@ export class Parser {
         }
         let barCounter = 0;
         return [<div className={styles['chord-grid']}>{
-            reactStringReplace(line, /\|([^|]*)/g, (value, _, offset) => {
+            reactStringReplace(line, /\|([^|]*)/g, (value, idx, offset) => {
             barCounter += 1;
             if (value !== "") {
                 return (
-                <div className={classNames(styles['chord-bar'], getClasses(offset + barCounter - 1))}>
+                <div className={classNames(styles['chord-bar'], getClasses(offset + barCounter - 1))} key={idx}>
                     {this.parseChord(value)}
                 </div>
                 )
             } else if(getClasses(offset + barCounter - 1)) {
-                return (<div className={classNames(getClasses(offset + barCounter - 1))}></div>)
+                return (<div className={classNames(getClasses(offset + barCounter - 1))} key={idx}></div>)
             }
             })
         }</div>]
