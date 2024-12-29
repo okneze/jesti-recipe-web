@@ -3,7 +3,7 @@ import { Route, Routes, Link, useNavigate } from 'react-router-dom';
 
 import Sheet from './Sheet';
 import Home from './Home';
-import { useFetchList } from './util/useFetchList';
+import { useFetchSheets } from './util/useFetchSheets';
 import styles from './styles/App.module.css';
 import globalStyles from './styles/Global.module.css';
 import {ReactComponent as HouseSVG} from "./assets/icons/house.svg";
@@ -13,7 +13,7 @@ function App() {
   const repo = process.env.REACT_APP_SHEET_REPOSITORY ?? "";
   const branch = process.env.REACT_APP_SHEET_REPOSITORY_BRANCH ?? "";
 
-  const [sheets] = useFetchList(repo, branch);
+  const [sheets] = useFetchSheets(repo, branch);
 
   const [searchString, setSearchString] = useState("");
   const [title, setTitle] = useState("Delyrium");
