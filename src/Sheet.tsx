@@ -21,6 +21,7 @@ function Sheet({data, callbacks}: Props) {
 
   const [sheet, setSheet] = useState(data);
   const [originalKey, setOriginalKey] = useLocalstorage<boolean>("originalKeyToggle", false);
+
   const icon = new Icon();
 
   document.title = `Delyrium - ${sheet.title} - ${sheet.artist}`;
@@ -35,7 +36,7 @@ function Sheet({data, callbacks}: Props) {
   }
 
   function transposeChord(chord: string) {
-    return new Chord(chord, sheet.key).transpose(originalKey ? 0 : sheet.capo).toString();
+    return new Chord(chord, new Chord(sheet.key)).transpose(originalKey ? 0 : sheet.capo).toString();
   }
   const parser = new Parser(transposeChord);
 
@@ -46,9 +47,9 @@ function Sheet({data, callbacks}: Props) {
         <div className={styles.head}>
           <div className={styles.transpose}>
             <button onClick={() => {transpose(-1)}} className={styles['transpose-button']}>{icon.get("minus")}</button>
-            <span className={styles.chords} id="key">{sheet.key.toString()}{sheet.capo >= 0 ? `+${sheet.capo}` : sheet.capo}={transposedKey(sheet).toString()}</span>
+            <span className={styles.chords} id="key">{new Chord(sheet.key).toString()}{sheet.capo >= 0 ? `+${sheet.capo}` : sheet.capo}={transposedKey(sheet).toString()}</span>
             <button onClick={() => {transpose(+1)}} className={styles['transpose-button']}>{icon.get("plus")}</button>
-            <span className={styles.tags}>{data.tags.map((tag) => icon.get(tag))}</span>
+            <span className={styles.tags}>{data.tags.map((tag, idx) => (<span key={idx}>{icon.get(tag)}</span>))}</span>
             <label>
               Original
               <input type="checkbox" checked={originalKey} onChange={(e) => {setOriginalKey((e.target as HTMLInputElement).checked)}} />
@@ -56,17 +57,19 @@ function Sheet({data, callbacks}: Props) {
           </div>
         </div>
         <div className={styles.sheet} style={{"--columns": sheet.columns}}>
-          {sheet.lyrics.split("\n\n").map((block) => {
+          {sheet.lyrics.split("\n\n").map((block, blockId) => {
             let blockClasses = styles.block;
             // peek what comes next
             if(block.match(/^[ \t]{1,4}|{soc}|{start_of_chorus}/g)) {
               blockClasses = classNames(blockClasses, styles.chorus);
             }
-            return (<div className={blockClasses}>{block.split("\n").map((line, idx) => {
+            return (<div className={blockClasses} key={`block-${blockId}`}>
+              {block.split("\n").map((line, idx) => {
               if(line === "" || line[0] === "#") {
                 // ignore comments and shebang and empty lines
-                return (<></>);
-              } else if(line[0] === "{") {
+                return (<React.Fragment key={idx}></React.Fragment>);
+              }
+              if(line[0] === "{") {
                 // TODO: directives
                 switch (line) {
                   case "{start_of_grid}":
@@ -78,30 +81,29 @@ function Sheet({data, callbacks}: Props) {
                     directiveMode = "normal";
                     break;
                   case line.match(/^{define:|^{chord:/)?.input:
-                    return (<div className={styles['chord-definition']}>{parser.directiveDefine(line)}</div>);
+                    return (<div className={styles['chord-definition']} key={idx}>{parser.directiveDefine(line)}</div>);
                   default:
                     console.log('found directive', line);
                     break;
                 }
-                return (<></>);
-              } else {
-                const empty = line.replaceAll(/\[(.*?)\]/g, "").length === 0;
-                const modifications: (string|React.ReactNode[])[] = [line];
-
-                if(directiveMode === 'grid') {
-                  modifications.unshift(parser.parseGrid(line));
-                } else {
-                  // parse chords
-                  modifications.unshift(parser.parseBlock(modifications[0]));
-                  // underline
-                  modifications.unshift(reactStringReplace(modifications[0], /_(.*?)_/g, (value) => (<span className={styles.highlight}>{value}</span>)))
-                }
-                return (
-                  <div key={idx} className={classNames(styles.line, empty && styles.empty)}>
-                    {modifications[0]}
-                  </div>
-                );
+                return (<React.Fragment key={idx}></React.Fragment>);
               }
+              const empty = line.replaceAll(/\[(.*?)\]/g, "").length === 0;
+              const modifications: (string|React.ReactNode[])[] = [line];
+
+              if(directiveMode === 'grid') {
+                modifications.unshift(parser.parseGrid(line));
+              } else {
+                // parse chords
+                modifications.unshift(parser.parseBlock(modifications[0]));
+                // underline
+                modifications.unshift(reactStringReplace(modifications[0], /_(.*?)_/g, (value, matchId) => (<span className={styles.highlight} key={`match-${matchId}`}>{value}</span>)))
+              }
+              return (
+                <div key={`line-${idx}`} className={classNames(styles.line, empty && styles.empty)}>
+                  {modifications[0]}
+                </div>
+              );
 
             })}</div>);
           })}

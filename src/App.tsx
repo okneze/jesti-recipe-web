@@ -3,15 +3,18 @@ import { Route, Routes, Link, useNavigate } from 'react-router-dom';
 
 import Sheet from './Sheet';
 import Home from './Home';
-import data from './sheet_list.json'
-import { useFetch } from './util/useFetch';
+import { useFetchList } from './util/useFetchList';
 import styles from './styles/App.module.css';
 import globalStyles from './styles/Global.module.css';
 import {ReactComponent as HouseSVG} from "./assets/icons/house.svg";
 
 function App() {
 
-  const [sheets] = useFetch(data.files);
+  const repo = process.env.REACT_APP_SHEET_REPOSITORY ?? "";
+  const branch = process.env.REACT_APP_SHEET_REPOSITORY_BRANCH ?? "";
+
+  const [sheets] = useFetchList(repo, branch);
+
   const [searchString, setSearchString] = useState("");
   const [title, setTitle] = useState("Delyrium");
   const [artist, setArtist] = useState("");
@@ -49,8 +52,8 @@ function App() {
       <main className={styles.main}>
         <Routes>
           <Route path="/" element={<Home sheets={sheets} search={searchString} callbacks={{clear: clearSearchString, setTitle, setArtist}} />} />
-          {sheets.map((sheet, idx) => (
-            <Route path={`sheet/${sheet.slug}`} element={<Sheet data={sheet} callbacks={{setTitle, setArtist}} />} key={idx} />
+          {Object.entries(sheets ?? {}).map(([slug, sheet], idx) => (
+            <Route path={`sheet/${slug}`} element={<Sheet data={sheet} callbacks={{setTitle, setArtist}} key={`sheet-${idx}`} />} key={`route-${idx}`} />
           ))}
         </Routes>
       </main>

@@ -61,11 +61,10 @@ export default class Chord {
     return this
   }
 
-  toString() {
+  toString(): string {
     if(this.base === "*") {
       return this.addition;
     }
-    return `${this.third ? this.base : this.base.toLowerCase()}${this.addition}`
+    return `${this.third ? this.base : this.base.toLowerCase()}${this.addition}`;
   }
-
 }

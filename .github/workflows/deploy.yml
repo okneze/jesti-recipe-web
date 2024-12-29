@@ -19,9 +19,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
-    - name: Update sheets
-      run: python scripts/setup.py ${{ secrets.CLOUD_PATH }}
+    - name: Set environment
+      run: |
+        echo "REACT_APP_SHEET_REPOSITORY=${{ env.SHEET_REPOSITORY }}" >> "$GITHUB_ENV"
+        echo "REACT_APP_SHEET_REPOSITORY_BRANCH=${{ env.SHEET_REPOSITORY_BRANCH }}" >> "$GITHUB_ENV"
+        echo "$SHEET_REPOSITORY"
+    # - uses: actions/setup-python@v4
+    # - name: Update sheets
+    #   run: python scripts/setup.py ${{ secrets.CLOUD_PATH }}
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3

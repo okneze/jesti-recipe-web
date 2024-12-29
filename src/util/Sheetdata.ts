@@ -12,7 +12,7 @@ type SheetType = {
   composer: string;
   copyright: string;
   duration: string;
-  key: Chord;
+  key: string;
   lyricist: string;
   meta: string[];
   sorttitle: string;
@@ -25,7 +25,9 @@ type SheetType = {
 
   columns: number;
   lyrics: string;
-}
+};
+
+type SheetList = Record<string, SheetType>;
 
 function parseSheet(path: string, content: string) {
 
@@ -39,7 +41,7 @@ function parseSheet(path: string, content: string) {
     composer: "",
     copyright: "",
     duration: "",
-    key: new Chord(""),
+    key: "",
     lyricist: "",
     meta: [],
     sorttitle: "",
@@ -86,7 +88,7 @@ function parseSheet(path: string, content: string) {
           sheet.duration = directive[1];
           break;
         case "key":
-          sheet.key = new Chord(directive[1]);
+          sheet.key = directive[1];
           break;
         case "lyricist":
           sheet.lyricist = directive[1];
@@ -138,9 +140,9 @@ function matchSheet(sheet: SheetType, searchString: string) {
 }
 
 function transposedKey(sheet: SheetType) {
-  const key = new Chord(sheet.key.toString());
+  const key = new Chord(sheet.key);
   return key.transpose(sheet.capo);
 }
 
 export { matchSheet, parseSheet, transposedKey };
-export type { SheetType };
+export type { SheetType, SheetList };
