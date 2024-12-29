@@ -49,7 +49,7 @@ function Sheet({data, callbacks}: Props) {
             <button onClick={() => {transpose(-1)}} className={styles['transpose-button']}>{icon.get("minus")}</button>
             <span className={styles.chords} id="key">{new Chord(sheet.key).toString()}{sheet.capo >= 0 ? `+${sheet.capo}` : sheet.capo}={transposedKey(sheet).toString()}</span>
             <button onClick={() => {transpose(+1)}} className={styles['transpose-button']}>{icon.get("plus")}</button>
-            <span className={styles.tags}>{data.tags.map((tag, idx) => (<span key={idx}>{icon.get(tag)}</span>))}</span>
+            <span className={styles.tags}>{data.tags.map((tag, idx) => (<React.Fragment key={idx}>{icon.get(tag)}</React.Fragment>))}</span>
             <label>
               Original
               <input type="checkbox" checked={originalKey} onChange={(e) => {setOriginalKey((e.target as HTMLInputElement).checked)}} />

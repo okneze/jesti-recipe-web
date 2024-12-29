@@ -1,16 +1,20 @@
 
 .cardbox {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 16px;
     padding: 20px 32px;
+    max-width: 1200px;
+    margin-inline: auto;
 }
 
 .card {
-    display: inline-block;
-    width: 256px;
+    display: inline-flex;
     padding: 16px;
-    margin: 8px;
+    min-height: 96px;
+
+    flex-direction: column;
+    justify-content: space-between;
 
     /* border-color: lightgray; */
     background: white;
@@ -30,15 +34,12 @@
 
 .title {
     margin: 0 0 4px 0;
-    height: 40px;
     line-height: 1em;
     letter-spacing: -0.0375em;
+    text-wrap: balance;
 }
 
 .band {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
     font-family: Milonga;
     line-height: 1.5;
     display: flex;
@@ -50,4 +51,5 @@
     color: var(--blue);
     padding-left: 0.5em;
     display: inline;
+    flex-shrink: 0;
 }

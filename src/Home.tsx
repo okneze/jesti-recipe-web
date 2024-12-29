@@ -44,7 +44,7 @@ function Home({sheets, search, callbacks}: Props) {
               <div className={styles.band}>
                 {sheet.artist}
                 {sheet.tags.map((tag, idx) => {
-                  return (<span key={idx}>{icon.get(tag)}</span>)
+                  return (<React.Fragment key={idx}>{icon.get(tag)}</React.Fragment>)
                 })}
               </div>
             </Link>
