@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Route, Routes, Link, useNavigate } from 'react-router-dom';
 
 import Sheet from './Sheet';
@@ -6,19 +6,19 @@ import Home from './Home';
 import data from './sheet_list.json'
 import { useFetch } from './util/useFetch';
 import styles from './styles/App.module.css';
+import globalStyles from './styles/Global.module.css';
 import {ReactComponent as HouseSVG} from "./assets/icons/house.svg";
-import {ReactComponent as MagnifierSVG} from "./assets/icons/magnifying-glass.svg";
 
 function App() {
 
   const [sheets] = useFetch(data.files);
   const [searchString, setSearchString] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
   const [title, setTitle] = useState("Delyrium");
   const [artist, setArtist] = useState("");
 
   const [redirect, setRedirect] = useState("");
   const navigate = useNavigate();
+
   useEffect(() => {
     if (redirect !== ""){
       navigate(redirect);
@@ -34,11 +34,15 @@ function App() {
     <>
       <header>
         <div className={styles['header-wrapper']}>
-          <Link to="/" className={styles.home}>
-            <HouseSVG />
-          </Link>
-          <button onClick={() => setShowSearch((show) => !show)} className={styles.magnifier}><MagnifierSVG /></button>
-          {showSearch && <input onChange={(event) => setSearchString(event.target.value)} onKeyDown={(event) => {event.key === 'Enter' && setRedirect("/")}} value={searchString} className={styles.searchbar} />}
+          <div className={styles['header-left']}>
+            <Link to="/" className={styles.home} onClick={() => setSearchString("")}>
+              <HouseSVG />
+            </Link>
+            <label>
+              <span className={globalStyles['sr-only']}>Search</span>
+              <input onChange={(event) => setSearchString(event.target.value)} onKeyDown={(event) => {event.key === 'Enter' && setRedirect("/")}} value={searchString} className={styles.searchbar} />
+            </label>
+          </div>
           <h1>{title}{artist !== "" && <> - <span>{artist}</span></>}</h1>
         </div>
       </header>
