@@ -7,14 +7,13 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
-env:
-  REACT_APP_SHEET_REPOSITORY: ${{ env.SHEET_REPOSITORY }}
-  REACT_APP_SHEET_REPOSITORY_BRANCH: ${{ env.SHEET_REPOSITORY_BRANCH }}
-
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    env:
+      REACT_APP_SHEET_REPOSITORY: ${{ env.SHEET_REPOSITORY }}
+      REACT_APP_SHEET_REPOSITORY_BRANCH: ${{ env.SHEET_REPOSITORY_BRANCH }}
 
     strategy:
       matrix:
@@ -23,6 +22,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Set environment
+      run: |
+        env
     # - uses: actions/setup-python@v4
     # - name: Update sheets
     #   run: python scripts/setup.py ${{ secrets.CLOUD_PATH }}
