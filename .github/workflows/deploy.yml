@@ -23,9 +23,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set environment
-      run: |
-        env
     # - uses: actions/setup-python@v4
     # - name: Update sheets
     #   run: python scripts/setup.py ${{ secrets.CLOUD_PATH }}
