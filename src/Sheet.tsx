@@ -24,7 +24,7 @@ function Sheet({data, callbacks}: Props) {
 
   const icon = new Icon();
 
-  document.title = `Delyrium - ${sheet.title} - ${sheet.artist}`;
+  document.title = `Recipe Web - ${sheet.title} - ${sheet.artist}`;
 
   useEffect(() => {
     callbacks.setTitle(sheet.title);

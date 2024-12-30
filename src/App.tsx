@@ -16,7 +16,7 @@ function App() {
   const [sheets] = useFetchSheets(repo, branch);
 
   const [searchString, setSearchString] = useState("");
-  const [title, setTitle] = useState("Delyrium");
+  const [title, setTitle] = useState("Recipe Web");
   const [artist, setArtist] = useState("");
 
   const [redirect, setRedirect] = useState("");

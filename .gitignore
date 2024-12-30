@@ -25,5 +25,3 @@ yarn-error.log*
 
 # delyrium-specific
 /public
-/src/sheet_list.json
-/cloud_path.txt

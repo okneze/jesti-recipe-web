@@ -16,7 +16,7 @@ type Props = {
 };
 
 function Home({sheets, search, callbacks}: Props) {
-  document.title = "Delyrium";
+  document.title = "Recipe Web";
 
   const icon = new Icon();
 
@@ -30,7 +30,7 @@ function Home({sheets, search, callbacks}: Props) {
   }, [search, sheets]);
 
   useEffect(() => {
-    callbacks.setTitle("Delyrium");
+    callbacks.setTitle("Recipe Web");
     callbacks.setArtist("");
   }, [callbacks]);
 
