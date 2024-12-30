@@ -63,7 +63,7 @@ function Sheet({data, callbacks}: Props) {
             if(block.match(/^[ \t]{1,4}|{soc}|{start_of_chorus}/g)) {
               blockClasses = classNames(blockClasses, styles.chorus);
             }
-            return (<div className={blockClasses} key={`block-${blockId}`}>
+            return (<div className={blockClasses} key={blockId}>
               {block.split("\n").map((line, idx) => {
               if(line === "" || line[0] === "#") {
                 // ignore comments and shebang and empty lines
@@ -79,6 +79,8 @@ function Sheet({data, callbacks}: Props) {
                   case "{end_of_grid}":
                   case "{eog}":
                     directiveMode = "normal";
+                    break;
+                  case line.match(/^{start_of_chorus|^{end_of_chorus|^{soc|^{eoc/)?.input:
                     break;
                   case line.match(/^{define:|^{chord:/)?.input:
                     return (<div className={styles['chord-definition']} key={idx}>{parser.directiveDefine(line)}</div>);
@@ -100,7 +102,7 @@ function Sheet({data, callbacks}: Props) {
                 modifications.unshift(reactStringReplace(modifications[0], /_(.*?)_/g, (value, matchId) => (<span className={styles.highlight} key={`match-${matchId}`}>{value}</span>)))
               }
               return (
-                <div key={`line-${idx}`} className={classNames(styles.line, empty && styles.empty)}>
+                <div key={idx} className={classNames(styles.line, empty && styles.empty)}>
                   {modifications[0]}
                 </div>
               );

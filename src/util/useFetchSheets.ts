@@ -30,23 +30,23 @@ export function useFetchSheets(repository: string, branch: string): [SheetList?]
     fetch(listURL)
     .then((raw) => raw.json())
     .then((result) => {
+      // update sheets
+      (result as SheetFileList).tree.forEach(element => {
+        const updateSheet = (list?.tree.findIndex((value) => value.path === element.path && value.sha === element.sha) ?? -1) < 0;
+        if(element.path.endsWith(".crd") && updateSheet) {
+          const sheetURL = `https://raw.githubusercontent.com/${repository}/${branch}/${element.path}`;
+          fetch(sheetURL)
+          .then((raw) => raw.text())
+          .then((sheet) => {
+            const parsed = parseSheet(element.path, sheet);
+            setSheets(prev => ({...prev, [parsed.slug]: parsed}));
+          });
+        }
+      });
       if(!list || list.sha !== (result as SheetFileList).sha) {
-        // also update all sheets
-        (result as SheetFileList).tree.forEach(element => {
-          if(element.path.endsWith(".crd") && !list?.tree.findIndex((value) => value.path === element.path && value.sha === element.sha)) {
-            const sheetURL = `https://raw.githubusercontent.com/${repository}/${branch}/${element.path}`;
-            fetch(sheetURL)
-            .then((raw) => raw.text())
-            .then((sheet) => {
-              const parsed = parseSheet(element.path, sheet);
-              setSheets(prev => ({...prev, [parsed.slug]: parsed}));
-            });
-          }
-        });
-
         setList(result);
-        setUpdated(Date.now());
       }
+      setUpdated(Date.now());
     });
   }, [branch, list, repository, setList, setSheets, setUpdated, updated]);
   return [sheets];
