@@ -1,0 +1,79 @@
+
+.layout {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px 32px;
+}
+
+.recipe {
+    font-weight: 500;
+    font-size: 1.125rem;
+}
+
+.tags {
+    display: flex;
+    gap: 8px;
+}
+
+.tag {
+    padding: 1px 4px;
+    border: 1px solid red;
+    border-radius: 4px;
+}
+
+.flag {
+    height: calc(1.5em + 4px);
+}
+
+.flag svg {
+    height: 100%;
+    width: auto;
+}
+
+@media (max-width: 900px) {
+    .recipe {
+        column-count: max(1, calc(var(--columns) - 1));
+    }
+}
+
+@media (max-width: 600px) {
+    .recipe {
+        column-count: 1;
+    }
+}
+
+.head {
+    margin: 1rem 0;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.head h2 {
+    font-size: 4rem;
+    display: inline-block;
+    margin: 0 2rem 0 0;
+}
+
+.head h3 {
+    font-size: 3rem;
+    display: inline-block;
+    font-weight: 400;
+    margin: 0 1rem 0 0;
+}
+
+.icon {
+    width: 3rem;
+    margin: 8px;
+}
+
+.homebutton {
+    position: fixed;
+    z-index: 10;
+}
+
+@media print {
+    .homebutton {
+        display: none;
+    }
+}

@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Route, Routes, Link, useNavigate } from 'react-router-dom';
 
-import Sheet from './Sheet';
 import Home from './Home';
-import { useFetchSheets } from './util/useFetchSheets';
+import { useFetch } from './util/useFetch';
 import styles from './styles/App.module.css';
 import globalStyles from './styles/Global.module.css';
 import {ReactComponent as HouseSVG} from "./assets/icons/house.svg";
+import Recipe from './Recipe';
 
 function App() {
 
-  const repo = process.env.REACT_APP_SHEET_REPOSITORY ?? "";
-  const branch = process.env.REACT_APP_SHEET_REPOSITORY_BRANCH ?? "";
+  const repo = "heinrob/recipes";
+  const branch = "master";
 
-  const [sheets] = useFetchSheets(repo, branch);
+  const [recipes] = useFetch(repo, branch);
 
   const [searchString, setSearchString] = useState("");
   const [title, setTitle] = useState("Recipe Web");
-  const [artist, setArtist] = useState("");
+  const [author, setAuthor] = useState("");
 
   const [redirect, setRedirect] = useState("");
   const navigate = useNavigate();
@@ -46,14 +46,14 @@ function App() {
               <input onChange={(event) => setSearchString(event.target.value)} onKeyDown={(event) => {event.key === 'Enter' && setRedirect("/")}} value={searchString} className={styles.searchbar} />
             </label>
           </div>
-          <h1>{title}{artist !== "" && <> - <span>{artist}</span></>}</h1>
+          <h1>{title}{author !== "" && <> - <span>{author}</span></>}</h1>
         </div>
       </header>
       <main className={styles.main}>
         <Routes>
-          <Route path="/" element={<Home sheets={sheets} search={searchString} callbacks={{clear: clearSearchString, setTitle, setArtist}} />} />
-          {Object.entries(sheets ?? {}).map(([slug, sheet], idx) => (
-            <Route path={`sheet/${slug}`} element={<Sheet data={sheet} callbacks={{setTitle, setArtist}} key={`sheet-${idx}`} />} key={`route-${idx}`} />
+          <Route path="/" element={<Home recipes={recipes} search={searchString} callbacks={{clear: clearSearchString, setTitle, setAuthor}} />} />
+          {Object.entries(recipes ?? {}).map(([slug, recipe], idx) => (
+            <Route path={`recipe/${slug}`} element={<Recipe recipe={recipe} callbacks={{setTitle, setAuthor}} key={`recipe-${idx}`} />} key={`route-${idx}`} />
           ))}
         </Routes>
       </main>

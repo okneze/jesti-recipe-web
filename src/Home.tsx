@@ -2,55 +2,57 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import styles from './styles/Home.module.css'
-import {SheetList, SheetType, matchSheet} from './util/Sheetdata';
+import {RecipeList, RecipeType, matchRecipe} from './util/Recipedata';
 import { Icon } from './Icon';
 
 type Props = {
-  sheets?: SheetList,
+  recipes?: RecipeList,
   search: string,
   callbacks: {
     clear: () => void;
     setTitle: (title: string) => void;
-    setArtist: (artist: string) => void
+    setAuthor: (author: string) => void
   }
 };
 
-function Home({sheets, search, callbacks}: Props) {
+function Home({recipes, search, callbacks}: Props) {
   document.title = "Recipe Web";
 
   const icon = new Icon();
 
-  const [sortedSheets, setSortedSheets] = useState<SheetType[]>([]);
+  const [sortedRecipes, setSortedRecipes] = useState<RecipeType[]>([]);
   useEffect(() => {
-    if (search !== "" && sheets) {
-      setSortedSheets(Object.values(sheets).sort((a,b) => {return matchSheet(b, search) - matchSheet(a, search)}));
-    } else if(sheets) {
-      setSortedSheets(Object.values(sheets).sort((a,b) => a.title.localeCompare(b.title)));
+    if (search !== "" && recipes) {
+      setSortedRecipes(Object.values(recipes).sort((a,b) => {return matchRecipe(b, search) - matchRecipe(a, search)}));
+    } else if(recipes) {
+      setSortedRecipes(Object.values(recipes).sort((a,b) => a.title.localeCompare(b.title)));
     }
-  }, [search, sheets]);
+  }, [search, recipes]);
 
   useEffect(() => {
     callbacks.setTitle("Recipe Web");
-    callbacks.setArtist("");
+    callbacks.setAuthor("");
   }, [callbacks]);
 
   return (
     <div className={styles.cardbox}>
-      {sortedSheets.map((sheet) => {
-        if (search === "" || matchSheet(sheet, search) >= 0.4 + search.length * 0.02) {
+      {sortedRecipes.map((recipe, idx) => {
+        const match = matchRecipe(recipe, search);
+        if (search === "" || match >= 0.4 + search.length * 0.02) {
           return (
-            <Link to={`/sheet/${sheet.slug}`} key={sheet.id} className={styles.card} onClick={callbacks.clear}>
-              <h3 className={styles.title}>{sheet.title}</h3>
-              <div className={styles.band}>
-                {sheet.artist}
-                {sheet.tags.map((tag, idx) => {
-                  return (<React.Fragment key={idx}>{icon.get(tag)}</React.Fragment>)
-                })}
+            <Link to={`/recipe/${recipe.slug}`} key={idx} className={styles.card} onClick={callbacks.clear}>
+              <h3 className={styles.title}>
+                {recipe.title}
+              </h3>
+              {recipe.imagePath.length > 1 && <img src={recipe.imagePath} alt="" />}
+              <div className={styles.tags}>
+                {recipe.tags.join(", ")}
+                <span className={styles.flag}>{icon.get(recipe.language)}</span>
               </div>
             </Link>
           )
         } else {
-          return (<React.Fragment key={sheet.id}></React.Fragment>)
+          return (<React.Fragment key={idx}></React.Fragment>)
         }
       })}
     </div>

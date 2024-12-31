@@ -16,9 +16,7 @@
     flex-direction: column;
     justify-content: space-between;
 
-    /* border-color: lightgray; */
     background: white;
-    color: var(--blue);
     border: none;
     border-radius: 16px;
     box-shadow: var(--elevation-small);
@@ -35,21 +33,23 @@
 .title {
     margin: 0 0 4px 0;
     line-height: 1em;
-    letter-spacing: -0.0375em;
     text-wrap: balance;
 }
 
-.band {
-    font-family: Milonga;
-    line-height: 1.5;
-    display: flex;
+.tags {
+    line-height: 1;
 }
 
-.band svg {
-    width: 1.5em;
-    height: 1.5em;
-    color: var(--blue);
+.flag {
+    height: 1em;
+    position: relative;
+}
+
+.flag svg {
+    position: relative;
+    bottom: -0.25em;
+    /* width: 1.5em; */
+    height: 1em;
     padding-left: 0.5em;
     display: inline;
-    flex-shrink: 0;
 }
