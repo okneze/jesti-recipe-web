@@ -23,7 +23,7 @@ export function useFetch(repository: string, branch: string): [RecipeList] {
 
   useEffect(() => {
     // Only update once per hour
-    if(updated + 1000 > Date.now()) {
+    if(updated + 1000 * 60 * 60 > Date.now()) {
       return;
     }
     const listURL = `https://api.github.com/repos/${repository}/git/trees/${branch}?recursive=1`;
