@@ -3,7 +3,7 @@ import styles from './styles/Recipe.module.css'
 import { RecipeType } from './util/Recipedata';
 import { useMarkdown } from './util/useMarkdown';
 import { Icon } from './Icon';
-import { imageRenderer, ingredientRenderer } from './util/md2img';
+import { imageRenderer, ingredientRenderer } from './util/marked';
 
 type Props = {
   recipe: RecipeType;

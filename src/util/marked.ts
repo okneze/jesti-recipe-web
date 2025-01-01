@@ -52,17 +52,27 @@ function imageRenderer(root: string): RendererObject {
   }
 }
 
-function ingredientRenderer(multiplier?: number): RendererObject {
+function ingredientRenderer(multiplier: number = 1): RendererObject {
   return {
     em({ tokens }: Tokens.Em): string {
       const content = this.parser.parseInline(tokens);
       const isComma = content.includes(",");
-      const num = /[0-9.,/]+/.exec(content.replace(",", "."));
-      // TODO: also allow "-" and split and separate
-      if(num && multiplier) {
-        const isFrac = num[0].includes("/");
-        const product = new Fraction(num[0]).mul(multiplier);
-        return `<em>${content.replace(",", ".").replace(num[0], isFrac ? product.toFraction() : (isComma ? product.toString(2).replace(".", ",") : product.toString(2)))}</em>`;
+      const num = /([0-9.,/]+)[-]?([0-9.,/]*)/.exec(content.replace(",", "."));
+
+      function calc(input: string): string {
+        const isFrac = input.includes("/");
+        const product = new Fraction(input).mul(multiplier);
+        return isFrac ? product.toFraction() : (isComma ? product.toString(2).replace(".", ",") : product.toString(2));
+      }
+
+      if(num) {
+        const resultLeft = calc(num[1]);
+        if(num[2] !== "") {
+          // second part of range
+          const resultRight = calc(num[2]);
+          return `<em>${content.replace(",", ".").replace(num[0], `${resultLeft}-${resultRight}`)}</em>`;
+        }
+        return `<em>${content.replace(",", ".").replace(num[0], resultLeft)}</em>`;
       }
       return `<em>${content}</em>`;
     }
