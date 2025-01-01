@@ -1,24 +1,25 @@
 import { Marked, MarkedExtension } from "marked";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-export function useMarkdown<T extends HTMLElement>(markdown: string, options?: MarkedExtension): React.RefObject<T> {
-  const ref = useRef<T>(null);
+export function useMarkdown(markdown: string, options?: MarkedExtension): [string, React.Dispatch<React.SetStateAction<MarkedExtension | undefined>>] {
+  const [output, setOutput] = useState("");
+  const [opt, setOptions] = useState(options);
 
-  const [marked] = useState(options ? new Marked(options) : new Marked());
+  const [marked, setMarked] = useState(new Marked({...opt}));
 
   useEffect(() => {
-    if(ref.current) {
-      const parsedDescription = marked.parse(markdown);
-      if(typeof parsedDescription === 'string') {
-        ref.current.innerHTML = parsedDescription;
-      } else {
-        parsedDescription.then((value) => {
-          if(ref.current) {
-            ref.current.innerHTML = value;
-          }
-        })
-      }
+    setMarked(new Marked({...opt}));
+  }, [opt]);
+
+  useEffect(() => {
+    const parsedDescription = marked.parse(markdown);
+    if(typeof parsedDescription === 'string') {
+      setOutput(parsedDescription);
+    } else {
+      parsedDescription.then((value) => {
+        setOutput(value);
+      })
     }
-  }, [ref, markdown, options, marked]);
-  return ref;
+  }, [markdown, marked, opt]);
+  return [output, setOptions];
 };
