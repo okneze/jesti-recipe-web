@@ -34,8 +34,8 @@ export function useFetch(repository: string, branch: string): [RecipeList] {
       (result as RecipeFileList).tree.forEach(element => {
         const updateRecipe = (list?.tree.findIndex((value) => value.path === element.path && value.sha === element.sha) ?? -1) < 0;
         if(element.path.endsWith(".md") && element.path !== "README.md" && updateRecipe) {
-          const root = `https://raw.githubusercontent.com/${repository}/${branch}`
-          const recipeURL = `${root}/${element.path}`;
+          const root = `https://raw.githubusercontent.com/${repository}/${branch}/`;
+          const recipeURL = new URL(element.path, root).href;
           fetch(recipeURL)
           .then((raw) => raw.text())
           .then((recipe) => {

@@ -1,5 +1,4 @@
 import { RendererObject, Tokens } from "marked";
-import p from "path-browserify";
 // Override function
 
 // HELPERS FROM https://github.com/markedjs/marked/blob/master/src/helpers.ts
@@ -33,18 +32,10 @@ function cleanUrl(href: string) {
   return href;
 }
 
-function absolutePath(root: string, path: string) {
-  if(path.startsWith("http")) {
-    return path;
-  } else {
-    return p.join(root, path);
-  }
-
-}
 function imageRenderer(root: string): RendererObject {
   return {
     image({ href, title, text }: Tokens.Image): string {
-      const cleanHref = cleanUrl(absolutePath(root, href));
+      const cleanHref = cleanUrl(new URL(href, root).href);
       if (cleanHref === null) {
         return escape(text);
       }
@@ -60,4 +51,4 @@ function imageRenderer(root: string): RendererObject {
   }
 }
 
-export {absolutePath, imageRenderer};
+export {imageRenderer};

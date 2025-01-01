@@ -1,7 +1,6 @@
 
 import { stringSimilarity } from "./stringUtil";
 import LanguageDetect from "languagedetect";
-import { absolutePath } from "./md2img";
 
 type RecipeType = {
   root: string;
@@ -74,7 +73,7 @@ function parseRecipe(path: string, content: string, author: string, root: string
   // get the first image
   const matches = /!\[.+?\]\((.+?)\)|<img.+?src="(.+?)"/g.exec(content);
   if(matches) {
-    recipe.imagePath = absolutePath(root, matches[1] ?? matches[2]);
+    recipe.imagePath = new URL(matches[1] ?? matches[2], root).href;
   }
   return recipe;
 }
