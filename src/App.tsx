@@ -53,11 +53,11 @@ function App() {
         <Routes>
           <Route path="/" element={<Home recipes={recipes} search={searchString} callbacks={{clear: clearSearchString, setTitle, setAuthor}} />} />
           {Object.entries(recipes ?? {}).map(([slug, recipe], idx) => (
-            <Route path={`recipe/${slug}`} element={<Recipe recipe={recipe} callbacks={{setTitle, setAuthor}} key={`recipe-${idx}`} />} key={`route-${idx}`} />
+            <Route path={`${slug}`} element={<Recipe recipe={recipe} callbacks={{setTitle, setAuthor}} key={`recipe-${idx}`} />} key={`route-${idx}`} />
           ))}
         </Routes>
       </main>
-      {/* <footer>FOOTER</footer> */}
+      <footer className={styles.footer}>©2025, Robin Heinbockel<br />recipes provided by the respective GitHub users</footer>
     </>
   );
 }

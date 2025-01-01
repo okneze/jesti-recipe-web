@@ -25,7 +25,7 @@ function parseRecipe(path: string, content: string, author: string, root: string
   const recipe: RecipeType = {
     root: root,
     path: path,
-    slug: path.replace(".md", ""),
+    slug: `${author}/${path.replace(".md", "")}`,
     author: author,
     title: "",
     imagePath: "",
@@ -72,9 +72,9 @@ function parseRecipe(path: string, content: string, author: string, root: string
   const lng = new LanguageDetect();
   recipe.language = lng.detect(content, 1)[0][0];
   // get the first image
-  const matches = /!\[.+?\]\((.+?)\)/g.exec(content);
+  const matches = /!\[.+?\]\((.+?)\)|<img.+?src="(.+?)"/g.exec(content);
   if(matches) {
-    recipe.imagePath = absolutePath(root, matches[1]);
+    recipe.imagePath = absolutePath(root, matches[1] ?? matches[2]);
   }
   return recipe;
 }

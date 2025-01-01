@@ -1,5 +1,6 @@
 :root {
   --light-gray: #fdfffe;
+  --gray: #668087;
   --black: #001111;
   --elevation-small: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   --elevation-high: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px, rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -89,4 +90,10 @@ main {
   background: none;
   cursor: pointer;
   color: var(--black);
+}
+
+.footer {
+  margin: 20px;
+  text-align: center;
+  color: var(--gray);
 }
