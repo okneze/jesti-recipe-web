@@ -41,12 +41,14 @@ function App() {
             <Link to="/" className={styles.home} onClick={() => setSearchString("")}>
               <HouseSVG />
             </Link>
+          </div>
+          <h1>{title}{author !== "" && <> - <span>{author}</span></>}</h1>
+          <div className={styles['search-wrapper']}>
             <label>
               <span className={globalStyles['sr-only']}>Search</span>
               <input onChange={(event) => setSearchString(event.target.value)} onKeyDown={(event) => {event.key === 'Enter' && setRedirect("/")}} value={searchString} className={styles.searchbar} />
             </label>
           </div>
-          <h1>{title}{author !== "" && <> - <span>{author}</span></>}</h1>
         </div>
       </header>
       <main className={styles.main}>

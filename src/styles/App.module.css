@@ -28,11 +28,15 @@ body {
 .home {
   text-decoration: none;
   flex-shrink: 0;
+  padding: 11px 10px;
+  border: 1px solid var(--black);
+  border-radius: 6px;
 }
 .header-wrapper h1 {
   margin: 0px;
   width: 100%;
   text-align: center;
+  grid-area: title;
 }
 .header-wrapper h1 span {
   font-size: 0.75em;
@@ -45,6 +49,7 @@ body {
 
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
+  grid-template-areas: "home title search";
   gap: 0.5rem;
   align-items: center;
   position: relative;
@@ -54,16 +59,20 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  grid-area: home;
 }
 
+.search-wrapper {
+  grid-area: search;
+}
 
 .searchbar {
-  padding: 4px;
+  padding: 7px;
   padding-right: 36px;
 
   background-color: var(--light-gray);
 
-  border: 2px solid var(--black);
+  border: 1px solid var(--black);
   border-radius: 6px;
 
   width: 100%;
@@ -73,8 +82,7 @@ body {
   background-repeat: no-repeat;
 
   &:focus {
-    outline: none;
-    border: 2px solid var(--blue);
+    outline: 2px solid var(--gray);
   }
 }
 
@@ -83,6 +91,9 @@ main {
   /* min-height: calc(100dvh - var(--header-height)); */
   /* padding-top: var(--header-height); */
   /* padding-bottom: 4rem; */
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 32px;
 }
 
 .magnifier {
@@ -96,4 +107,17 @@ main {
   margin: 20px;
   text-align: center;
   color: var(--gray);
+}
+
+@media (width < 560px) {
+  main {
+    padding-inline: 16px;
+  }
+
+  .header-wrapper {
+    padding-inline: 16px;
+    grid-template-areas: "home search"
+                         "title title";
+    grid-template-columns: 1fr 5fr;
+  }
 }

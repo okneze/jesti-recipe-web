@@ -1,10 +1,4 @@
 
-.layout {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 32px 32px;
-}
-
 .recipe {
     font-weight: 500;
     font-size: 1.125rem;
@@ -28,18 +22,6 @@
 .flag svg {
     height: 100%;
     width: auto;
-}
-
-@media (max-width: 900px) {
-    .recipe {
-        column-count: max(1, calc(var(--columns) - 1));
-    }
-}
-
-@media (max-width: 600px) {
-    .recipe {
-        column-count: 1;
-    }
 }
 
 .head {

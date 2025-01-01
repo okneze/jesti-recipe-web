@@ -1,11 +1,9 @@
 
 .cardbox {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 16px;
-    padding: 20px 32px;
-    max-width: 1200px;
-    margin-inline: auto;
+    padding-block: 20px;
 }
 
 .card {
@@ -99,9 +97,9 @@
     }
 }
 
-@media (width < 600px) {
+@media (width < 560px) {
     .cardbox {
-        padding-inline: 16px;
+        grid-template-columns: minmax(0, 1fr);
     }
     .flag {
         opacity: 1;
