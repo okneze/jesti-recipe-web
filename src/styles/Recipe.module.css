@@ -4,6 +4,11 @@
     font-size: 1.125rem;
 }
 
+.recipe img {
+    max-width: 50%;
+    max-height: 300px;
+}
+
 .tags {
     display: flex;
     gap: 8px;
@@ -27,21 +32,8 @@
 .head {
     margin: 1rem 0;
     display: flex;
-    justify-content: center;
+    align-items: flex-start;
     flex-direction: column;
-}
-
-.head h2 {
-    font-size: 4rem;
-    display: inline-block;
-    margin: 0 2rem 0 0;
-}
-
-.head h3 {
-    font-size: 3rem;
-    display: inline-block;
-    font-weight: 400;
-    margin: 0 1rem 0 0;
 }
 
 .icon {
@@ -54,8 +46,20 @@
     z-index: 10;
 }
 
+.author {
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: var(--gray);
+}
+
 @media print {
     .homebutton {
         display: none;
+    }
+}
+
+@media (width < 560px) {
+    .recipe img {
+        max-width: 100%;
     }
 }

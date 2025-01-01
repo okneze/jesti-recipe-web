@@ -16,8 +16,6 @@ function App() {
   const [recipes] = useFetch(repo, branch);
 
   const [searchString, setSearchString] = useState("");
-  const [title, setTitle] = useState("Recipe Web");
-  const [author, setAuthor] = useState("");
 
   const [redirect, setRedirect] = useState("");
   const navigate = useNavigate();
@@ -42,7 +40,7 @@ function App() {
               <HouseSVG />
             </Link>
           </div>
-          <h1>{title}{author !== "" && <> - <span>{author}</span></>}</h1>
+          <span className={styles.title}>Recipe Web</span>
           <div className={styles['search-wrapper']}>
             <label>
               <span className={globalStyles['sr-only']}>Search</span>
@@ -53,9 +51,9 @@ function App() {
       </header>
       <main className={styles.main}>
         <Routes>
-          <Route path="/" element={<Home recipes={recipes} search={searchString} callbacks={{clear: clearSearchString, setTitle, setAuthor}} />} />
+          <Route path="/" element={<Home recipes={recipes} search={searchString} callbacks={{clear: clearSearchString}} />} />
           {Object.entries(recipes ?? {}).map(([slug, recipe], idx) => (
-            <Route path={`${slug}`} element={<Recipe recipe={recipe} callbacks={{setTitle, setAuthor}} key={`recipe-${idx}`} />} key={`route-${idx}`} />
+            <Route path={`${slug}`} element={<Recipe recipe={recipe} key={`recipe-${idx}`} />} key={`route-${idx}`} />
           ))}
         </Routes>
       </main>

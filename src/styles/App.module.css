@@ -1,6 +1,6 @@
 :root {
   --light-gray: #fdfffe;
-  --gray: #668087;
+  --gray: #5c7b80;
   --black: #001111;
   --elevation-small: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   --elevation-high: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px, rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -9,6 +9,7 @@
   --footer-height: 20px;
 
   --sans: 'Outfit', sans-serif;
+  --font-h1: 2rem;
 }
 
 @font-face {
@@ -32,16 +33,14 @@ body {
   border: 1px solid var(--black);
   border-radius: 6px;
 }
-.header-wrapper h1 {
+.title {
+  font-size: var(--font-h1);
   margin: 0px;
   width: 100%;
   text-align: center;
   grid-area: title;
 }
-.header-wrapper h1 span {
-  font-size: 0.75em;
-  white-space: pre;
-}
+
 .header-wrapper {
   padding: 10px 32px;
   max-width: 1200px;
