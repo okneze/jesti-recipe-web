@@ -58,10 +58,11 @@ function ingredientRenderer(multiplier?: number): RendererObject {
       const content = this.parser.parseInline(tokens);
       const isComma = content.includes(",");
       const num = /[0-9.,/]+/.exec(content.replace(",", "."));
+      // TODO: also allow "-" and split and separate
       if(num && multiplier) {
         const isFrac = num[0].includes("/");
         const product = new Fraction(num[0]).mul(multiplier);
-        return `<em>${content.replace(num[0], isFrac ? product.toFraction() : (isComma ? product.toString(2).replace(".", ",") : product.toString(2)))}</em>`;
+        return `<em>${content.replace(",", ".").replace(num[0], isFrac ? product.toFraction() : (isComma ? product.toString(2).replace(".", ",") : product.toString(2)))}</em>`;
       }
       return `<em>${content}</em>`;
     }
