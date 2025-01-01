@@ -95,6 +95,11 @@ main {
   padding-inline: 32px;
 }
 
+em {
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
 .magnifier {
   border: none;
   background: none;

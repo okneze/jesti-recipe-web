@@ -51,11 +51,19 @@ function imageRenderer(root: string): RendererObject {
     }
   }
 }
+function replaceUnicodeFractions(str: string) {
+  const mapObj: Record<string, string> = {"¼": "1/4", "½": "1/2", "¾": "3/4", "⅐": "1/7", "⅑": "1/9", "⅒": "1/10", "⅓": "1/3", "⅔": "2/3", "⅕": "1/5", "⅖": "2/5", "⅗": "3/5", "⅘": "4/5", "⅙": "1/6", "⅚": "5/6", "⅛": "1/8", "⅜": "3/8", "⅝": "5/8", "⅞": "7/8", "⅟": "1/", "↉": "0/3"};
+  var re = new RegExp(Object.keys(mapObj).join("|"),"gi");
+
+  return str.replace(re, function(matched){
+      return mapObj[matched.toLowerCase()];
+  });
+}
 
 function ingredientRenderer(multiplier: number = 1): RendererObject {
   return {
     em({ tokens }: Tokens.Em): string {
-      const content = this.parser.parseInline(tokens);
+      const content = replaceUnicodeFractions(this.parser.parseInline(tokens));
       const isComma = content.includes(",");
       const num = /([0-9.,/]+)[-]?([0-9.,/]*)/.exec(content.replace(",", "."));
 
