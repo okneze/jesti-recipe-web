@@ -1,5 +1,8 @@
 
 .recipe {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
     font-weight: 500;
     font-size: 1.125rem;
 }
@@ -50,6 +53,14 @@
     margin-bottom: 8px;
     font-weight: 700;
     color: var(--gray);
+}
+
+.yield-label {
+    padding: 4px;
+}
+
+.yield-input {
+    width: 60px;
 }
 
 @media print {

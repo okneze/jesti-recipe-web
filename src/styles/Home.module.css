@@ -24,7 +24,6 @@
 
     text-decoration: none;
     transition: transform 300ms;
-
 }
 
 .card:hover, .card:focus {

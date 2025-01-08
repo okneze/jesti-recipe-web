@@ -60,31 +60,55 @@ function replaceUnicodeFractions(str: string) {
   });
 }
 
+function splitAmountList(list: string): string[] {
+  return list === "" ? [] : list.split(/(?<!\d),|,(?!\d)/);
+}
+
+function splitAmountUnit(amount: string): string[] {
+  const isComma = amount.includes(",");
+  const num = /([0-9.,/]+)[-]?([0-9.,/]*)(.*)/.exec(amount.replace(",", "."));
+  if(num) {
+    if(num[2] !== "") {
+      // second part of range
+      const res = `${num[1]}-${num[2]}`;
+      return [isComma ? res.replaceAll(".", ",") : res, num[3]];
+    }
+    return [isComma ? num[1].replace(".", ",") : num[1], num[3]];
+  }
+  return [amount];
+}
+
+function multiplyAmount(amount: string, multiplier: number): string {
+  const isComma = amount.includes(",");
+  const num = /([0-9.,/]+)[-]?([0-9.,/]*)/.exec(amount.replace(",", "."));
+
+  function calc(input: string): string {
+    const isFrac = input.includes("/");
+    const product = new Fraction(input).mul(multiplier);
+    const decimals = "" + parseFloat(product.valueOf().toFixed(2));
+    return isFrac ? product.toFraction() : (isComma ? decimals.replace(".", ",") : decimals);
+  }
+
+  if(num) {
+    const resultLeft = calc(num[1]);
+    if(num[2] !== "") {
+      // second part of range
+      const resultRight = calc(num[2]);
+      return amount.replace(",", ".").replace(num[0], `${resultLeft}-${resultRight}`);
+    }
+    return amount.replace(",", ".").replace(num[0], resultLeft);
+  }
+  return amount;
+
+}
+
 function ingredientRenderer(multiplier: number = 1): RendererObject {
   return {
     em({ tokens }: Tokens.Em): string {
       const content = replaceUnicodeFractions(this.parser.parseInline(tokens));
-      const isComma = content.includes(",");
-      const num = /([0-9.,/]+)[-]?([0-9.,/]*)/.exec(content.replace(",", "."));
-
-      function calc(input: string): string {
-        const isFrac = input.includes("/");
-        const product = new Fraction(input).mul(multiplier);
-        return isFrac ? product.toFraction() : (isComma ? product.toString(2).replace(".", ",") : product.toString(2));
-      }
-
-      if(num) {
-        const resultLeft = calc(num[1]);
-        if(num[2] !== "") {
-          // second part of range
-          const resultRight = calc(num[2]);
-          return `<em>${content.replace(",", ".").replace(num[0], `${resultLeft}-${resultRight}`)}</em>`;
-        }
-        return `<em>${content.replace(",", ".").replace(num[0], resultLeft)}</em>`;
-      }
-      return `<em>${content}</em>`;
+      return `<em>${multiplyAmount(content, multiplier)}</em>`;
     }
   }
 }
 
-export {imageRenderer, ingredientRenderer};
+export {imageRenderer, ingredientRenderer, splitAmountList, multiplyAmount, splitAmountUnit};

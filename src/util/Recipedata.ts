@@ -11,7 +11,7 @@ type RecipeType = {
   imagePath: string;
   description: string;
   tags: string[];
-  yield: string;
+  yields: string;
   ingredients: string;
   instructions: string;
   language: string;
@@ -30,7 +30,7 @@ function parseRecipe(path: string, content: string, author: string, root: string
     imagePath: "",
     description: "",
     tags: [],
-    yield: "",
+    yields: "",
     ingredients: "",
     instructions: content,
     language: "",
@@ -52,7 +52,7 @@ function parseRecipe(path: string, content: string, author: string, root: string
       if(line.startsWith("# ")) {
         recipe.title = line.replace("# ", "");
       } else if(line.startsWith("**")) {
-        recipe.yield = line.split("**")[1];
+        recipe.yields = line.split("**")[1];
       } else if(line.startsWith("*")) {
         recipe.tags = line.replaceAll(", ", ",").split("*")[1].split(",");
       } else {
