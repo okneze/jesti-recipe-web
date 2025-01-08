@@ -55,12 +55,41 @@
     color: var(--gray);
 }
 
-.yield-label {
+.yields {
+    display: inline-flex;
+    flex-direction: column;
+    padding-inline: 8px;
+    gap: 8px;
+}
+
+.yields-btn {
+    background: var(--black);
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    border: none;
+    color: var(--light-gray);
+    display: inline flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+
+    &:hover, &:focus-visible {
+        background: var(--gray);
+    }
+
+    &:active {
+        background: var(--black);
+        color: var(--gray);
+    }
+}
+
+.yields-label {
     padding: 4px;
 }
 
-.yield-input {
-    width: 60px;
+.yields-input {
+    width: 80px;
 }
 
 @media print {

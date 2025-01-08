@@ -12,6 +12,7 @@ type Props = {
 
 function Recipe({recipe}: Props) {
   const [multiplier, setMultiplier] = useState(1);
+  const [multiplierStr, setMultiplierStr] = useState("1");
   const baseYields = useMemo(() => splitAmountList(recipe.yields).map((amnt) => new Fraction(splitAmountUnit(amnt)[0].replace(",", ".").split("-")[0]).valueOf()), [recipe]);
   const [yields, setYields] = useState(splitAmountList(recipe.yields).map((amnt) => multiplyAmount(amnt, multiplier)));
   const [ingredientsOptions] = useState({renderer: ingredientRenderer(multiplier)});
@@ -30,6 +31,18 @@ function Recipe({recipe}: Props) {
     setYields(splitAmountList(recipe.yields).map((amnt) => multiplyAmount(amnt, multiplier)));
   }, [multiplier, setYields, recipe, baseYields]);
 
+  function adjustMultiplier(value: string, divisor: number = 1): void {
+    const v = value.replace(/^0*/, "");
+    if(v === "" || v.startsWith("-")) {
+      setMultiplier(0);
+      setMultiplierStr("0");
+    } else {
+      const result = Number.parseFloat(v) / divisor;
+      setMultiplier(result);
+      setMultiplierStr(`${Number.parseFloat(new Fraction(result).simplify().valueOf().toFixed(2))}`);
+    }
+  }
+
   return (
       <div className={styles.layout}>
         <div className={styles.head}>
@@ -43,21 +56,29 @@ function Recipe({recipe}: Props) {
         <div className={styles.recipe}>
           <div>Description: <div dangerouslySetInnerHTML={{__html: description}}></div></div>
           <div>Yields: 
-            {yields.map((value, idx) => {
-              let amount = splitAmountUnit(value);
-              return (
-                <label key={idx} className={styles['yield-label']}>
-                  <input type='number' className={styles['yield-input']} onChange={(event) => setMultiplier(Number.parseFloat(event.target.value) / baseYields[idx])} value={amount[0]} />
-                  <span>{amount.length > 1 && amount[1]}</span>,
+            <div className={styles.yields}>
+              {yields.map((value, idx) => {
+                let amount = splitAmountUnit(value);
+                return (
+                  <div key={idx}>
+                    <button className={styles['yields-btn']} onClick={() => adjustMultiplier(`${multiplier - 1 / baseYields[idx]}`)}>{icon.get('minus')}</button>
+                    <label className={styles['yields-label']}>
+                      <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value, baseYields[idx])} value={amount[0]} />
+                      <span>{amount.length > 1 && amount[1]}</span>
+                    </label>
+                    <button className={styles['yields-btn']} onClick={() => adjustMultiplier(`${multiplier + 1 / baseYields[idx]}`)}>{icon.get('plus')}</button>
+                  </div>
+                );
+              })}
+              <div>
+                <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier - 1 + "")}>{icon.get('minus')}</button>
+                <label className={styles['yields-label']}>
+                  <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value)} value={multiplierStr} />
+                  <span> (Multiplier)</span>
                 </label>
-              );
-            })}
-            <label className={styles['yield-label']}>
-              {`(`}
-              <span>Multiplier: </span>
-              <input type='number' className={styles['yield-input']} onChange={(event) => setMultiplier(Number.parseFloat(event.target.value))} value={multiplier} />
-              {`)`}
-            </label>
+                <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier + 1 + "")}>{icon.get('plus')}</button>
+              </div>
+            </div>
           </div>
           <hr />
           <div>Ingredients: <div dangerouslySetInnerHTML={{__html: ingredients}}></div></div>
