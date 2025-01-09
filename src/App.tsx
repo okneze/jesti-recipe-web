@@ -10,10 +10,12 @@ import Recipe from './Recipe';
 
 function App() {
 
-  const repo = "heinrob/recipes";
-  const branch = "master";
+  const repos = [
+    {username: "heinrob", repository: "recipes", branch: "master"},
+    {username: "tstehr", repository: "recipes", branch: "master"}
+  ];
 
-  const [recipes] = useFetch(repo, branch);
+  const [recipes] = useFetch(repos);
 
   const [searchString, setSearchString] = useState("");
 
