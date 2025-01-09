@@ -10,6 +10,8 @@
 .recipe img {
     max-width: 50%;
     max-height: 300px;
+    border-radius: 16px;
+    border: 1px solid var(--black);
 }
 
 .tags {
@@ -74,7 +76,7 @@
     align-items: center;
     cursor: pointer;
 
-    &:hover, &:focus-visible {
+    &:focus-visible {
         background: var(--gray);
     }
 
@@ -84,17 +86,63 @@
     }
 }
 
+@media (hover: hover) {
+    .yields-btn:hover {
+        background: var(--gray);
+    }
+}
+
 .yields-label {
-    padding: 4px;
+    padding: 4px 8px;
 }
 
 .yields-input {
-    width: 80px;
+    width: 60px;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    border: 1px solid var(--black);
+    border-radius: 6px;
+
+    &::-webkit-inner-spin-button, &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+    }
+}
+
+.yields-and-ingredients {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: max(30%, 320px);
+}
+
+.ingredients {
+    padding: 16px;
+    border: 1px solid var(--black);
+    border-radius: 16px;
+}
+
+.instructions-container {
+    display: flex;
+    gap: 32px;
+    margin-top: 32px;
+}
+
+.instructions {
+    & li + li {
+        margin-top: 8px;
+    }
 }
 
 @media print {
     .homebutton {
         display: none;
+    }
+}
+
+@media (width <= 768px) {
+    .instructions-container {
+        flex-direction: column;
+        gap: 16px;
     }
 }
 

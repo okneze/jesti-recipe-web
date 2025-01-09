@@ -54,36 +54,36 @@ function Recipe({recipe}: Props) {
           </div>
         </div>
         <div className={styles.recipe}>
-          <div>Description: <div dangerouslySetInnerHTML={{__html: description}}></div></div>
-          <div>Yields: 
-            <div className={styles.yields}>
-              {yields.map((value, idx) => {
-                let amount = splitAmountUnit(value);
-                return (
-                  <div key={idx}>
-                    <button className={styles['yields-btn']} onClick={() => adjustMultiplier(`${multiplier - 1 / baseYields[idx]}`)}>{icon.get('minus')}</button>
-                    <label className={styles['yields-label']}>
-                      <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value, baseYields[idx])} value={amount[0]} />
-                      <span>{amount.length > 1 && amount[1]}</span>
-                    </label>
-                    <button className={styles['yields-btn']} onClick={() => adjustMultiplier(`${multiplier + 1 / baseYields[idx]}`)}>{icon.get('plus')}</button>
-                  </div>
-                );
-              })}
-              <div>
-                <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier - 1 + "")}>{icon.get('minus')}</button>
-                <label className={styles['yields-label']}>
-                  <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value)} value={multiplierStr} />
-                  <span> (Multiplier)</span>
-                </label>
-                <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier + 1 + "")}>{icon.get('plus')}</button>
+          <div className={styles.description} dangerouslySetInnerHTML={{__html: description}}></div>
+          <div className={styles['instructions-container']}>
+            <div className={styles['yields-and-ingredients']}>
+              <div className={styles.yields}>
+                {yields.map((value, idx) => {
+                  let amount = splitAmountUnit(value);
+                  return (
+                    <div key={idx}>
+                      <button className={styles['yields-btn']} onClick={() => adjustMultiplier(`${multiplier - 1 / baseYields[idx]}`)}>{icon.get('minus')}</button>
+                      <label className={styles['yields-label']}>
+                        <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value, baseYields[idx])} value={amount[0]} />
+                        <span>{amount.length > 1 && amount[1]}</span>
+                      </label>
+                      <button className={styles['yields-btn']} onClick={() => adjustMultiplier(`${multiplier + 1 / baseYields[idx]}`)}>{icon.get('plus')}</button>
+                    </div>
+                  );
+                })}
+                <div>
+                  <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier - 1 + "")}>{icon.get('minus')}</button>
+                  <label className={styles['yields-label']}>
+                    <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value)} value={multiplierStr} />
+                    <span> (Multiplier)</span>
+                  </label>
+                  <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier + 1 + "")}>{icon.get('plus')}</button>
+                </div>
               </div>
+              <div className={styles.ingredients} dangerouslySetInnerHTML={{__html: ingredients}}></div>
             </div>
+            <div className={styles.instructions} dangerouslySetInnerHTML={{__html: instructions}}></div>
           </div>
-          <hr />
-          <div>Ingredients: <div dangerouslySetInnerHTML={{__html: ingredients}}></div></div>
-          <hr />
-          <div>Instructions: <div dangerouslySetInnerHTML={{__html: instructions}}></div></div>
         </div>
       </div>
   );
