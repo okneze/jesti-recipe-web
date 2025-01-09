@@ -29,7 +29,7 @@
 .card:hover, .card:focus {
     transform: scale(1.05) rotate(var(--rotate, 2deg));
 
-    & .flag {
+    & .author {
         opacity: 1;
     }
 }
@@ -52,11 +52,11 @@
     line-height: 1;
 }
 
-.flag {
+.author {
     position: absolute;
     right: 0;
     top: 0;
-    width: 40px;
+    padding-inline: 10px;
     height: 40px;
     background: white;
     display: flex;
@@ -68,11 +68,10 @@
     border-bottom: 1px solid var(--black);
     opacity: 0;
     transition: opacity 300ms;
-}
 
-.flag svg {
-    width: 1.2em;
-    display: inline;
+    font-weight: 700;
+    color: var(--gray);
+    padding-bottom: 3px;
 }
 
 .preview {
@@ -100,7 +99,7 @@
     .cardbox {
         grid-template-columns: minmax(0, 1fr);
     }
-    .flag {
+    .author {
         opacity: 1;
     }
 }

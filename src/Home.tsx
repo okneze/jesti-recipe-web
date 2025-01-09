@@ -37,7 +37,7 @@ function Home({recipes, search, callbacks}: Props) {
             return (
               <Link to={`/${recipe.slug}`} key={idx} className={styles.card} onClick={callbacks.clear} style={{'--rotate': `${Math.random() * 4 - 2}deg`}}>
                 {recipe.imagePath.length > 1 ? <img className={styles.preview} src={recipe.imagePath} alt="" /> : <div className={styles['no-preview']}>{icon.get('food')}</div>}
-                <div className={styles.flag}>{icon.get(recipe.language)}</div>
+                <div className={styles.author}>@{recipe.author}</div>
                 <div className={styles['card-content']}>
                   <h3 className={styles.title}>
                     {recipe.title}
