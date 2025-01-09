@@ -13,6 +13,21 @@ type Props = {
   }
 };
 
+function shuffleArray<T>(array: Array<T>) {
+  let curId = array.length;
+  // There remain elements to shuffle
+  while (0 !== curId) {
+    // Pick a remaining element
+    let randId = Math.floor(Math.random() * curId);
+    curId -= 1;
+    // Swap it with the current element.
+    let tmp = array[curId];
+    array[curId] = array[randId];
+    array[randId] = tmp;
+  }
+  return array;
+}
+
 function Home({recipes, search, callbacks}: Props) {
   document.title = "Recipe Web";
 
@@ -23,7 +38,7 @@ function Home({recipes, search, callbacks}: Props) {
     if (search !== "" && recipes) {
       setSortedRecipes(Object.values(recipes).sort((a,b) => {return matchRecipe(b, search) - matchRecipe(a, search)}));
     } else if(recipes) {
-      setSortedRecipes(Object.values(recipes).sort((a,b) => a.title.localeCompare(b.title)));
+      setSortedRecipes(shuffleArray(Object.values(recipes)));
     }
   }, [search, recipes]);
 
