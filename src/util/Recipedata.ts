@@ -32,7 +32,7 @@ function parseRecipe(path: string, content: string, author: string, root: string
     tags: [],
     yields: "",
     ingredients: "",
-    instructions: content,
+    instructions: "",
     language: "",
   };
 
@@ -42,9 +42,6 @@ function parseRecipe(path: string, content: string, author: string, root: string
     // first block with general information
     if(/^([-]{3,}|[*]{3,}|[_]{3,})$/.test(line)) {
       blockCount += 1;
-      if(blockCount === 2) {
-        recipe.instructions = "";
-      }
       continue;
     }
     switch(blockCount) {
@@ -71,7 +68,7 @@ function parseRecipe(path: string, content: string, author: string, root: string
   const lng = new LanguageDetect();
   recipe.language = lng.detect(content, 1)[0][0];
   // get the first image
-  const matches = /!\[.+?\]\((.+?)\)|<img.+?src="(.+?)"/g.exec(content);
+  const matches = /!\[.*?\]\((.+?)\)|<img.+?src="(.+?)"/g.exec(content);
   if(matches) {
     recipe.imagePath = new URL(matches[1] ?? matches[2], root).href;
   }
