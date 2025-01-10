@@ -47,7 +47,7 @@ function Recipe({recipe}: Props) {
       <div className={styles.layout}>
         <div className={styles.head}>
           <h1>{recipe.title}</h1>
-          <a className={styles.author} href={`https://github.com/${recipe.author}`} target='_blank' rel='noreferrer'>@{recipe.author}</a>
+          <a className={styles.author} href={`/${recipe.author}`}>@{recipe.author}</a>
           <div className={styles.tags}>
             {recipe.tags.map((tag, idx) => (<div key={idx} className={styles.tag}>{tag}</div>))}
             <div className={styles.flag}>{icon.get(recipe.language)}</div>

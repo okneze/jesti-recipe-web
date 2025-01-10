@@ -8,6 +8,7 @@ import { Icon } from './Icon';
 type Props = {
   recipes?: RecipeList,
   search: string,
+  author?: string,
   callbacks: {
     clear: () => void;
   }
@@ -28,7 +29,7 @@ function shuffleArray<T>(array: Array<T>) {
   return array;
 }
 
-function Home({recipes, search, callbacks}: Props) {
+function Home({recipes, search, callbacks, author}: Props) {
   document.title = "Recipe Web";
 
   const icon = new Icon();
@@ -36,15 +37,21 @@ function Home({recipes, search, callbacks}: Props) {
   const [sortedRecipes, setSortedRecipes] = useState<RecipeType[]>([]);
   useEffect(() => {
     if (search !== "" && recipes) {
-      setSortedRecipes(Object.values(recipes).sort((a,b) => {return matchRecipe(b, search) - matchRecipe(a, search)}));
+      setSortedRecipes(Object.values(recipes).filter((recipe) => !author || recipe.author === author).sort((a,b) => {return matchRecipe(b, search) - matchRecipe(a, search)}));
     } else if(recipes) {
-      setSortedRecipes(shuffleArray(Object.values(recipes)));
+      setSortedRecipes(shuffleArray(Object.values(recipes).filter((recipe) => !author || recipe.author === author)));
     }
-  }, [search, recipes]);
+  }, [search, recipes, author]);
 
   return (
     <>
       <h1 hidden={true}>Recipe Web</h1>
+      {author && (
+        <>
+          <h2>@{author}</h2>
+          <a href={`https://github.com/${author}`} target='_blank' rel='noreferrer'>GitHub</a>
+        </>
+      )}
       <div className={styles.cardbox}>
         {sortedRecipes.map((recipe, idx) => {
           const match = matchRecipe(recipe, search);
