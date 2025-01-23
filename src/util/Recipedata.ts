@@ -1,5 +1,3 @@
-
-import { stringSimilarity } from "./stringUtil";
 import LanguageDetect from "languagedetect";
 
 type RecipeType = {
@@ -75,13 +73,5 @@ function parseRecipe(path: string, content: string, author: string, root: string
   return recipe;
 }
 
-function matchRecipe(recipe: RecipeType, searchString: string) {
-  let max = 0;
-  for(const target of [recipe.slug, recipe.description, recipe.ingredients, recipe.tags.join(","), recipe.instructions]) {
-    max = Math.max(stringSimilarity(searchString, target), max);
-  }
-  return max
-}
-
-export { matchRecipe, parseRecipe };
+export { parseRecipe };
 export type { RecipeType, RecipeList };

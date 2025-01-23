@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useDeferredValue } from 'react';
 import { Route, Routes, Link, useNavigate } from 'react-router-dom';
 
 import Home from './Home';
@@ -18,6 +18,7 @@ function App() {
   const [recipes] = useFetch(repos);
 
   const [searchString, setSearchString] = useState("");
+  const deferredSearch = useDeferredValue(searchString);
 
   const [redirect, setRedirect] = useState("");
   const navigate = useNavigate();
@@ -53,9 +54,9 @@ function App() {
       </header>
       <main className={styles.main}>
         <Routes>
-          <Route path="/" element={<Home recipes={recipes} search={searchString} callbacks={{clear: clearSearchString}} />} />
+          <Route path="/" element={<Home recipes={recipes} search={deferredSearch} callbacks={{clear: clearSearchString}} />} />
           {repos.map(({username}, idx) => (
-            <Route path={username} element={<Home recipes={recipes} author={username} search={searchString} callbacks={{clear: clearSearchString}} />} key={idx} />
+            <Route path={username} element={<Home recipes={recipes} author={username} search={deferredSearch} callbacks={{clear: clearSearchString}} />} key={idx} />
           ))}
           {Object.entries(recipes ?? {}).map(([slug, recipe], idx) => (
             <Route path={`${slug}`} element={<Recipe recipe={recipe} key={`recipe-${idx}`} />} key={`route-${idx}`} />
