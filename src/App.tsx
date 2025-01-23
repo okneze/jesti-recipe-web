@@ -8,12 +8,15 @@ import globalStyles from './styles/Global.module.css';
 import {ReactComponent as HouseSVG} from "./assets/icons/house.svg";
 import Recipe from './Recipe';
 
+type Repository = {
+  username: string;
+  repository: string;
+  branch: string;
+}
+
 function App() {
 
-  const repos = [
-    {username: "heinrob", repository: "recipes", branch: "master"},
-    {username: "tstehr", repository: "recipes", branch: "master"}
-  ];
+  const repos = JSON.parse(process.env.REACT_APP_REPOSITORIES ?? '[]') as Repository[];
 
   const [recipes] = useFetch(repos);
 
