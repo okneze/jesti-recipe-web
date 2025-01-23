@@ -1,4 +1,5 @@
 import LanguageDetect from "languagedetect";
+import { marked } from "marked";
 
 type RecipeType = {
   root: string;
@@ -36,30 +37,38 @@ function parseRecipe(path: string, content: string, author: string, root: string
 
   let blockCount = 0;
 
-  for(let line of content.split("\n")) {
-    // first block with general information
-    if(/^([-]{3,}|[*]{3,}|[_]{3,})$/.test(line)) {
+  const tokens = marked.lexer(content);
+
+  for(const token of tokens) {
+    if(token.type === "hr") {
       blockCount += 1;
       continue;
     }
     switch(blockCount) {
     case 0:
-      if(line.startsWith("# ")) {
-        recipe.title = line.replace("# ", "");
-      } else if(line.startsWith("**")) {
-        recipe.yields = line.split("**")[1];
-      } else if(line.startsWith("*")) {
-        recipe.tags = line.replaceAll(", ", ",").split("*")[1].split(",");
-      } else {
-        recipe.description += line + "\n";
-        // TODO post: remove double excess new lines
+      if(token.type === "heading" && token.depth === 1) {
+        recipe.title = token.text;
+        continue;
       }
+      if(token.type === "paragraph") {
+        if(token.tokens && token.tokens.length > 0) {
+          if(token.tokens[0].type === "em") {
+            recipe.tags = token.tokens[0].text.replaceAll(", ", ",").split(",");
+            continue;
+          }
+          if(token.tokens[0].type === "strong") {
+            recipe.yields = token.tokens[0].text;
+            continue;
+          }
+        }
+      }
+      recipe.description += token.raw;
       break;
     case 1:
-      recipe.ingredients += line + "\n";
+      recipe.ingredients += token.raw;
       break;
     default:
-      recipe.instructions += line + "\n";
+      recipe.instructions += token.raw;
     }
   }
   //   detect language for the static strings
