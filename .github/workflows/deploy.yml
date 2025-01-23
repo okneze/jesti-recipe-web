@@ -28,7 +28,9 @@ jobs:
       run: yarn install
 
     - name: Build
-      run: yarn build
+      run: |
+        env
+        yarn build
 
     - name: Deploy
       run: |
