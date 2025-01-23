@@ -10,10 +10,18 @@ type Props = {
   recipe: RecipeType;
 };
 
+function splitAmount(amount: string) {
+  try {
+    return new Fraction(splitAmountUnit(amount)[0].replace(",", ".").split("-")[0]).valueOf();
+  } catch {
+    return 1;
+  }
+}
+
 function Recipe({recipe}: Props) {
   const [multiplier, setMultiplier] = useState(1);
   const [multiplierStr, setMultiplierStr] = useState("1");
-  const baseYields = useMemo(() => splitAmountList(recipe.yields).map((amnt) => new Fraction(splitAmountUnit(amnt)[0].replace(",", ".").split("-")[0]).valueOf()), [recipe]);
+  const baseYields = useMemo(() => splitAmountList(recipe.yields).map(splitAmount), [recipe]);
   const [yields, setYields] = useState(splitAmountList(recipe.yields).map((amnt) => multiplyAmount(amnt, multiplier)));
   const [ingredientsOptions] = useState({renderer: {...ingredientRenderer(multiplier), ...linkRenderer()}});
   const [description] = useMarkdown(recipe.description, {renderer: imageRenderer(recipe.root)});

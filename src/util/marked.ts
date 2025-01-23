@@ -110,10 +110,14 @@ function multiplyAmount(amount: string, multiplier: number): string {
   const num = /([0-9.,/]+)[-]?([0-9.,/]*)/.exec(amount.replace(",", "."));
 
   function calc(input: string): string {
-    const isFrac = input.includes("/");
-    const product = new Fraction(input).mul(multiplier);
-    const decimals = "" + parseFloat(product.valueOf().toFixed(2));
-    return isFrac ? product.toFraction() : (isComma ? decimals.replace(".", ",") : decimals);
+    try {
+      const isFrac = input.includes("/");
+      const product = new Fraction(input).mul(multiplier);
+      const decimals = "" + parseFloat(product.valueOf().toFixed(2));
+      return isFrac ? product.toFraction() : (isComma ? decimals.replace(".", ",") : decimals);
+    } catch {
+      return input;
+    }
   }
 
   if(num) {
