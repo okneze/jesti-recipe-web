@@ -95,6 +95,13 @@
     }
 }
 
+
+.github {
+    display: inline;
+    margin-left: 0.25em;
+    height: 1em;
+}
+
 @media (width < 560px) {
     .cardbox {
         grid-template-columns: minmax(0, 1fr);

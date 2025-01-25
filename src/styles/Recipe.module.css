@@ -135,6 +135,11 @@
     }
 }
 
+.github {
+    display: inline;
+    margin-left: 0.25em;
+}
+
 @media print {
     .homebutton {
         display: none;

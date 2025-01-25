@@ -53,8 +53,8 @@ function App() {
       <main className={styles.main}>
         <Routes>
           <Route path="/" element={<Home recipes={recipes} search={deferredSearch} callbacks={{clear: clearSearchString}} />} />
-          {repos.map(({author}, idx) => (
-            <Route path={author} element={<Home recipes={recipes} author={author} search={deferredSearch} callbacks={{clear: clearSearchString}} />} key={idx} />
+          {repos.map((repo, idx) => (
+            <Route path={repo.author} element={<Home recipes={recipes} repo={repo} search={deferredSearch} callbacks={{clear: clearSearchString}} />} key={idx} />
           ))}
           {Object.entries(recipes ?? {}).map(([slug, recipe], idx) => (
             <Route path={`${slug}`} element={<Recipe recipe={recipe} key={`recipe-${idx}`} />} key={`route-${idx}`} />
