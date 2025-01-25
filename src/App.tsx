@@ -7,12 +7,7 @@ import styles from './styles/App.module.css';
 import globalStyles from './styles/Global.module.css';
 import {ReactComponent as HouseSVG} from "./assets/icons/house.svg";
 import Recipe from './Recipe';
-
-type Repository = {
-  username: string;
-  repository: string;
-  branch: string;
-}
+import { Repository } from './util/Recipedata';
 
 function App() {
 
@@ -58,8 +53,8 @@ function App() {
       <main className={styles.main}>
         <Routes>
           <Route path="/" element={<Home recipes={recipes} search={deferredSearch} callbacks={{clear: clearSearchString}} />} />
-          {repos.map(({username}, idx) => (
-            <Route path={username} element={<Home recipes={recipes} author={username} search={deferredSearch} callbacks={{clear: clearSearchString}} />} key={idx} />
+          {repos.map(({author}, idx) => (
+            <Route path={author} element={<Home recipes={recipes} author={author} search={deferredSearch} callbacks={{clear: clearSearchString}} />} key={idx} />
           ))}
           {Object.entries(recipes ?? {}).map(([slug, recipe], idx) => (
             <Route path={`${slug}`} element={<Recipe recipe={recipe} key={`recipe-${idx}`} />} key={`route-${idx}`} />

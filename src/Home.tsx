@@ -47,7 +47,7 @@ function Home({recipes, search, callbacks, author}: Props) {
       ],
       threshold: 0.4,
     };
-    return new Fuse(Object.values(recipes ?? []).filter((recipe) => !author || recipe.author === author), fuseOptions)
+    return new Fuse(Object.values(recipes ?? []).filter((recipe) => !author || recipe.meta.author === author), fuseOptions)
   }, [recipes, author]);
 
   const [sortedRecipes, setSortedRecipes] = useState<RecipeType[]>([]);
@@ -55,7 +55,7 @@ function Home({recipes, search, callbacks, author}: Props) {
     if (search !== "" && recipes) {
       setSortedRecipes(fuse.search(search).map((result) => result.item));
     } else if(recipes) {
-      setSortedRecipes(shuffleArray(Object.values(recipes).filter((recipe) => !author || recipe.author === author)));
+      setSortedRecipes(shuffleArray(Object.values(recipes).filter((recipe) => !author || recipe.meta.author === author)));
     }
   }, [search, recipes, author, fuse]);
 
@@ -71,9 +71,9 @@ function Home({recipes, search, callbacks, author}: Props) {
       <div className={styles.cardbox}>
         {sortedRecipes.map((recipe, idx) => {
           return (
-            <Link to={`/${recipe.slug}`} key={idx} className={styles.card} onClick={callbacks.clear} style={{'--rotate': `${Math.random() * 4 - 2}deg`}}>
+            <Link to={`/${recipe.meta.slug}`} key={idx} className={styles.card} onClick={callbacks.clear} style={{'--rotate': `${Math.random() * 4 - 2}deg`}}>
               {recipe.imagePath.length > 1 ? <img className={styles.preview} src={recipe.imagePath} alt="" /> : <div className={styles['no-preview']}>{icon.get('food')}</div>}
-              <div className={styles.author}>@{recipe.author}</div>
+              <div className={styles.author}>@{recipe.meta.author}</div>
               <div className={styles['card-content']}>
                 <h3 className={styles.title}>
                   {recipe.title}

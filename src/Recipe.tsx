@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import styles from './styles/Recipe.module.css'
-import { RecipeType } from './util/Recipedata';
+import { rawRoot, RecipeType } from './util/Recipedata';
 import { useMarkdown } from './util/useMarkdown';
 import { Icon } from './Icon';
 import { imageRenderer, ingredientRenderer, linkRenderer, multiplyAmount, splitAmountList, splitAmountUnit } from './util/marked';
@@ -24,12 +24,12 @@ function Recipe({recipe}: Props) {
   const baseYields = useMemo(() => splitAmountList(recipe.yields).map(splitAmount), [recipe]);
   const [yields, setYields] = useState(splitAmountList(recipe.yields).map((amnt) => multiplyAmount(amnt, multiplier)));
   const [ingredientsOptions] = useState({renderer: {...ingredientRenderer(multiplier), ...linkRenderer()}});
-  const [description] = useMarkdown(recipe.description, {renderer: imageRenderer(recipe.root)});
+  const [description] = useMarkdown(recipe.description, {renderer: imageRenderer(rawRoot(recipe))});
   const [ingredients, setIngredients] = useMarkdown(recipe.ingredients, ingredientsOptions);
-  const [instructions] = useMarkdown(recipe.instructions, {renderer: {...imageRenderer(recipe.root), ...linkRenderer()}});
+  const [instructions] = useMarkdown(recipe.instructions, {renderer: {...imageRenderer(rawRoot(recipe)), ...linkRenderer()}});
 
   const icon = new Icon();
-  document.title = `Recipe Web - ${recipe.title} - ${recipe.author}`;
+  document.title = `Recipe Web - ${recipe.title} - ${recipe.meta.author}`;
 
   useEffect(() => {
     setIngredients({renderer: {...ingredientRenderer(multiplier), ...linkRenderer()}});
@@ -55,7 +55,7 @@ function Recipe({recipe}: Props) {
       <div className={styles.layout}>
         <div className={styles.head}>
           <h1>{recipe.title}</h1>
-          <a className={styles.author} href={`/${recipe.author}`}>@{recipe.author}</a>
+          <a className={styles.author} href={`/${recipe.meta.author}`}>@{recipe.meta.author}</a>
           <div className={styles.tags}>
             {recipe.tags.map((tag, idx) => (<div key={idx} className={styles.tag}>{tag}</div>))}
             <div className={styles.flag}>{icon.get(recipe.language)}</div>

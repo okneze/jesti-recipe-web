@@ -1,11 +1,14 @@
 import LanguageDetect from "languagedetect";
 import { marked } from "marked";
 
-type RecipeType = {
-  root: string;
-  path: string;
-  slug: string;
+type Repository = {
   author: string;
+  repository: string;
+  branch: string;
+};
+
+type RecipeType = {
+  meta: RecipeMeta;
   title: string;
   imagePath: string;
   description: string;
@@ -16,15 +19,27 @@ type RecipeType = {
   language: string;
 };
 
+type RecipeMeta = Repository & {
+  path: string;
+  slug: string;
+}
+
 type RecipeList = Record<string, RecipeType>;
 
-function parseRecipe(path: string, content: string, author: string, root: string) {
+const GITHUB_RAW = "https://raw.githubusercontent.com";
+
+function rawRoot(recipe: RecipeType): string {
+  return `${GITHUB_RAW}/${recipe.meta.author}/${recipe.meta.repository}/${recipe.meta.branch}`;
+}
+
+function parseRecipe(path: string, content: string, repository: Repository) {
 
   const recipe: RecipeType = {
-    root: root,
-    path: path,
-    slug: `${author}/${path.replace(".md", "")}`,
-    author: author,
+    meta: {
+      path: path,
+      slug: `${repository.author}/${path.replace(".md", "")}`,
+      ...repository,
+    },
     title: "",
     imagePath: "",
     description: "",
@@ -77,10 +92,10 @@ function parseRecipe(path: string, content: string, author: string, root: string
   // get the first image
   const matches = /!\[.*?\]\((.+?)\)|<img.+?src="(.+?)"/g.exec(content);
   if(matches) {
-    recipe.imagePath = new URL(matches[1] ?? matches[2], root).href;
+    recipe.imagePath = new URL(matches[1] ?? matches[2], rawRoot(recipe)).href;
   }
   return recipe;
 }
 
-export { parseRecipe };
-export type { RecipeType, RecipeList };
+export { parseRecipe, rawRoot };
+export type { RecipeType, RecipeList, Repository };
