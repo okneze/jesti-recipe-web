@@ -28,10 +28,6 @@ function App() {
     }
   }, [redirect, navigate]);
 
-  function clearSearchString() {
-    setSearchString("");
-  }
-
   return (
     <>
       <header>
@@ -52,9 +48,9 @@ function App() {
       </header>
       <main className={styles.main}>
         <Routes>
-          <Route path="/" element={<Home recipes={recipes} search={deferredSearch} callbacks={{clear: clearSearchString}} />} />
+          <Route path="/" element={<Home recipes={recipes} search={deferredSearch} />} />
           {repos.map((repo, idx) => (
-            <Route path={repo.author} element={<Home recipes={recipes} repo={repo} search={deferredSearch} callbacks={{clear: clearSearchString}} />} key={idx} />
+            <Route path={repo.author} element={<Home recipes={recipes} repo={repo} search={deferredSearch} />} key={idx} />
           ))}
           {Object.entries(recipes ?? {}).map(([slug, recipe], idx) => (
             <Route path={`${slug}`} element={<Recipe recipe={recipe} key={`recipe-${idx}`} />} key={`route-${idx}`} />

@@ -10,9 +10,6 @@ type Props = {
   recipes?: RecipeList,
   search: string,
   repo?: Repository,
-  callbacks: {
-    clear: () => void;
-  }
 };
 
 function shuffleArray<T>(array: Array<T>) {
@@ -30,7 +27,7 @@ function shuffleArray<T>(array: Array<T>) {
   return array;
 }
 
-function Home({recipes, search, callbacks, repo}: Props) {
+function Home({recipes, search, repo}: Props) {
   document.title = "Recipe Web";
 
   const icon = new Icon();
@@ -76,7 +73,7 @@ function Home({recipes, search, callbacks, repo}: Props) {
       <div className={styles.cardbox}>
         {sortedRecipes.map((recipe, idx) => {
           return (
-            <Link to={`/${recipe.meta.slug}`} key={idx} className={styles.card} onClick={callbacks.clear} style={{'--rotate': `${Math.random() * 4 - 2}deg`}}>
+            <Link to={`/${recipe.meta.slug}`} key={idx} className={styles.card} style={{'--rotate': `${Math.random() * 4 - 2}deg`}}>
               {recipe.imagePath.length > 1 ? <img className={styles.preview} src={recipe.imagePath} alt="" /> : <div className={styles['no-preview']}>{icon.get('food')}</div>}
               <div className={styles.author}>@{recipe.meta.author}</div>
               <div className={styles['card-content']}>
