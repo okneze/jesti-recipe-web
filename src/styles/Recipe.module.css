@@ -71,6 +71,7 @@
     width: 34px;
     height: 34px;
     border: none;
+    padding: 0;
     color: var(--light-gray);
     display: inline flex;
     justify-content: center;
