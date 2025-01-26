@@ -64,7 +64,7 @@ function Recipe({recipe}: Props) {
           </h1>
           <a className={styles.author} href={`/${recipe.meta.author}`}>@{recipe.meta.author}</a>
           <div className={styles.tags}>
-            {recipe.tags.map((tag, idx) => (<div key={idx} className={styles.tag}>{tag}</div>))}
+            {recipe.tags.map((tag, idx) => (<a href={`/?tag=${tag}`} key={idx} className={styles.tag}>{tag}</a>))}
             <div className={styles.flag}>{icon.get(recipe.language)}</div>
           </div>
         </div>

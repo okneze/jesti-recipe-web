@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import Fuse, { IFuseOptions } from 'fuse.js';
 
 import styles from './styles/Home.module.css'
@@ -32,6 +32,15 @@ function Home({recipes, search, repo}: Props) {
 
   const icon = new Icon();
 
+  const [query] = useSearchParams();
+
+  const recipesPrefiltered = useMemo(() => {
+    if (!recipes) {
+      return [];
+    }
+    return Object.values(recipes ?? []).filter((recipe) => (!repo?.author || recipe.meta.author === repo.author) && (!query.get("tag") || recipe.tags.includes(query.get("tag") ?? "")));
+  }, [recipes, repo, query]);
+
   const fuse = useMemo(() => {
     const fuseOptions: IFuseOptions<RecipeType> = {
       keys: [
@@ -44,8 +53,8 @@ function Home({recipes, search, repo}: Props) {
       ],
       threshold: 0.4,
     };
-    return new Fuse(Object.values(recipes ?? []).filter((recipe) => !repo?.author || recipe.meta.author === repo.author), fuseOptions)
-  }, [recipes, repo]);
+    return new Fuse(recipesPrefiltered, fuseOptions)
+  }, [recipesPrefiltered]);
 
   const fuseAuthor = useMemo(() => {
     const fuseOptions: IFuseOptions<RecipeType> = {
@@ -61,9 +70,9 @@ function Home({recipes, search, repo}: Props) {
     } else if(search !== "" && recipes) {
       setSortedRecipes(fuse.search(search).map((result) => result.item));
     } else if(recipes) {
-      setSortedRecipes(shuffleArray(Object.values(recipes).filter((recipe) => !repo?.author || recipe.meta.author === repo.author)));
+      setSortedRecipes(shuffleArray(recipesPrefiltered));
     }
-  }, [search, recipes, repo, fuse]);
+  }, [search, recipes, recipesPrefiltered, repo, fuse, fuseAuthor]);
 
   return (
     <>
