@@ -47,9 +47,18 @@ function Home({recipes, search, repo}: Props) {
     return new Fuse(Object.values(recipes ?? []).filter((recipe) => !repo?.author || recipe.meta.author === repo.author), fuseOptions)
   }, [recipes, repo]);
 
+  const fuseAuthor = useMemo(() => {
+    const fuseOptions: IFuseOptions<RecipeType> = {
+      keys: ['author'],
+    };
+    return new Fuse(Object.values(recipes ?? []), fuseOptions)
+  }, [recipes]);
+
   const [sortedRecipes, setSortedRecipes] = useState<RecipeType[]>([]);
   useEffect(() => {
-    if (search !== "" && recipes) {
+    if (search.startsWith("@") && recipes) {
+      setSortedRecipes(fuseAuthor.search(search.replace(/^@/, "")).map((result) => result.item));
+    } else if(search !== "" && recipes) {
       setSortedRecipes(fuse.search(search).map((result) => result.item));
     } else if(recipes) {
       setSortedRecipes(shuffleArray(Object.values(recipes).filter((recipe) => !repo?.author || recipe.meta.author === repo.author)));
