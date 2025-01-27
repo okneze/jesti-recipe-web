@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import Fuse, { IFuseOptions } from 'fuse.js';
+import Fuse from 'fuse.js';
 
 import styles from './styles/Home.module.css'
 import {RecipeList, RecipeType, Repository} from './util/Recipedata';
@@ -41,8 +41,13 @@ function Home({recipes, search, repo}: Props) {
     return Object.values(recipes ?? []).filter((recipe) => (!repo?.author || recipe.meta.author === repo.author) && (!query.get("tag") || recipe.tags.includes(query.get("tag") ?? "")));
   }, [recipes, repo, query]);
 
-  const fuse = useMemo(() => {
-    const fuseOptions: IFuseOptions<RecipeType> = {
+  const [sortedRecipes, setSortedRecipes] = useState<RecipeType[]>([]);
+  useEffect(() => {
+    if(!recipes) {
+      return;
+    }
+
+    const fuse = new Fuse(recipesPrefiltered, {
       keys: [
         {name: 'title', weight: 10},
         {name: 'tags', weight: 5},
@@ -52,27 +57,16 @@ function Home({recipes, search, repo}: Props) {
         'instructions'
       ],
       threshold: 0.4,
-    };
-    return new Fuse(recipesPrefiltered, fuseOptions)
-  }, [recipesPrefiltered]);
-
-  const fuseAuthor = useMemo(() => {
-    const fuseOptions: IFuseOptions<RecipeType> = {
-      keys: ['author'],
-    };
-    return new Fuse(Object.values(recipes ?? []), fuseOptions)
-  }, [recipes]);
-
-  const [sortedRecipes, setSortedRecipes] = useState<RecipeType[]>([]);
-  useEffect(() => {
-    if (search.startsWith("@") && recipes) {
+    });
+    const fuseAuthor = new Fuse(Object.values(recipes), {keys: ['author']});
+    if (search.startsWith("@")) {
       setSortedRecipes(fuseAuthor.search(search.replace(/^@/, "")).map((result) => result.item));
-    } else if(search !== "" && recipes) {
+    } else if(search !== "") {
       setSortedRecipes(fuse.search(search).map((result) => result.item));
-    } else if(recipes) {
+    } else {
       setSortedRecipes(shuffleArray(recipesPrefiltered));
     }
-  }, [search, recipes, recipesPrefiltered, repo, fuse, fuseAuthor]);
+  }, [search, recipes, repo, recipesPrefiltered]);
 
   return (
     <>

@@ -29,7 +29,7 @@ type RecipeList = Record<string, RecipeType>;
 const GITHUB_RAW = "https://raw.githubusercontent.com";
 
 function rawRoot(recipe: RecipeType): string {
-  return `${GITHUB_RAW}/${recipe.meta.author}/${recipe.meta.repository}/${recipe.meta.branch}`;
+  return `${GITHUB_RAW}/${recipe.meta.author}/${recipe.meta.repository}/${recipe.meta.branch}/`;
 }
 
 function parseRecipe(path: string, content: string, repository: Repository) {
