@@ -29,6 +29,8 @@ jobs:
 
     - name: Build
       run: yarn build
+      env:
+        REACT_APP_REPOSITORIES: ${{ vars.REPOSITORIES }}
 
     - name: Deploy
       run: |
@@ -41,3 +43,4 @@ jobs:
         user_email: 'github-actions[bot]@users.noreply.github.com'
         github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
         repository: ${{ github.repository }}
+        cname: ${{ vars.CNAME }}
