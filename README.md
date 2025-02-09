@@ -18,7 +18,7 @@ You can set up your own instance on [GitHub Pages](https://pages.github.com). Ju
 
     - `REPOSITORIES`: The repository containing your recipes. This is a JSON array in the following format:
         ```
-        [{"username":"<GitHub username>","repository":"<repository name>","branch":"<branch>"}]
+        [{"author":"<GitHub username>","repository":"<repository name>","branch":"<branch>"}]
         ```
         You an also add additional objects to the array to show recipes from multiple REPOSITORIES
 
