@@ -40,7 +40,7 @@ jobs:
     - name: Build
       run: npm run build
       env:
-        REACT_APP_REPOSITORIES: ${{ vars.REPOSITORIES }}
+        NEXT_PUBLIC_REPOSITORIES: ${{ vars.REPOSITORIES }}
 
     - name: Upload artifact 📡
       uses: actions/upload-pages-artifact@v3
