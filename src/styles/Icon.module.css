@@ -1,9 +1,0 @@
-.icon {
-    width: 24px;
-    height: 24px;
-    color: dimgrey;
-}
-
-.icon+.icon {
-    padding-left: 0.25em;
-}

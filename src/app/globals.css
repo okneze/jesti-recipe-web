@@ -1,0 +1,54 @@
+@import url("./resets.css");
+
+:root {
+  --light-gray: #fdfffe;
+  --gray: #5c7b80;
+  --black: #001111;
+  --elevation-small: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  --elevation-high: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px, rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+  --header-height: calc(48px + 2 * 10px);
+  --footer-height: 20px;
+
+  --sans: 'Outfit', sans-serif;
+  --font-h1: 2rem;
+}
+
+@font-face {
+  font-family: Outfit;
+  src: url("/Outfit-VariableFont_wght.ttf") format("truetype");
+  font-display: swap;
+  font-weight: 50 950;
+}
+
+body {
+  font-family: var(--sans);
+  background: var(--light-gray);
+  color: var(--black);
+}
+
+main {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 32px;
+}
+
+@media (width < 560px) {
+  main {
+    padding-inline: 16px;
+  }
+}
+
+em {
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position:absolute;
+  left:-10000px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+}
