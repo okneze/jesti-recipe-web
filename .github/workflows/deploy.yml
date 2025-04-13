@@ -37,6 +37,11 @@ jobs:
     - name: Install
       run: npm install
 
+    - name: Debug
+      run: env
+      env:
+        NEXT_PUBLIC_REPOSITORIES: ${{ vars.REPOSITORIES }}
+
     - name: Build
       run: npm run build
       env:
