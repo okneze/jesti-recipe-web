@@ -38,7 +38,9 @@ jobs:
         run: npm install
 
       - name: Build
-        run: REPOSITORIES='[{"author":"tstehr","repository":"recipes","branch":"master"}]' npm run build
+        run: npm run build
+        env:
+          REPOSITORIES: ${{ vars.REPOSITORIES }}
 
       - name: Upload artifact 📡
         uses: actions/upload-pages-artifact@v3
