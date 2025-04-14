@@ -1,10 +1,9 @@
 import React, { Suspense } from "react";
-import { parseRecipe, RecipeFiles, RecipeList, Repository } from "@/app/lib/Recipedata";
+import { getRepositories, parseRecipe, RecipeFiles, RecipeList } from "@/app/lib/Recipedata";
 import List from "@/app/components/List";
 
-
 export default async function Home() {
-  const repos: Repository[] = JSON.parse(process.env.REPOSITORIES ?? '[]');
+  const repos = getRepositories();
   const recipes: RecipeList = {};
   for(const repository of repos) {
     const repo: RecipeFiles = await fetch(`https://api.github.com/repos/${repository.author}/${repository.repository}/git/trees/${repository.branch}?recursive=1`, {cache: 'force-cache'}).then((res) => res.json());

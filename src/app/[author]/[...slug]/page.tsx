@@ -1,12 +1,12 @@
 import React from "react";
 import { Metadata } from "next";
 import Recipe from "@/app/components/Recipe";
-import { parseRecipe, RecipeFiles, Repository } from "@/app/lib/Recipedata";
+import { getRepositories, parseRecipe, RecipeFiles } from "@/app/lib/Recipedata";
 
 type Params = Promise<{author: string, slug: string[]}>;
 
 export async function generateStaticParams() {
-    const repos: Repository[] = JSON.parse(process.env.REPOSITORIES ?? '[]');
+    const repos = getRepositories();
     const result: {author: string, slug: string[]}[] = [];
     for(const {author, repository, branch} of repos) {
         const r: RecipeFiles = await fetch(`https://api.github.com/repos/${author}/${repository}/git/trees/${branch}?recursive=1`, {cache: 'force-cache'}).then((res) => res.json());
@@ -32,7 +32,7 @@ export async function generateStaticParams() {
 }
 
 async function getRecipe({author, slug}: {author: string, slug: string[]}) {
-    const repo = (JSON.parse(process.env.REPOSITORIES ?? '[]') as Repository[]).find((r) => r.author === author);
+    const repo = getRepositories().find((r) => r.author === author);
     if(!repo) {
         return;
     }

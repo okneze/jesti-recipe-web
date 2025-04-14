@@ -1,12 +1,12 @@
 import React, { Suspense } from "react";
 import { Metadata } from "next";
 import List from "@/app/components/List";
-import { parseRecipe, RecipeFiles, RecipeList, Repository } from "@/app/lib/Recipedata";
+import { getRepositories, parseRecipe, RecipeFiles, RecipeList } from "@/app/lib/Recipedata";
 
 type Params = Promise<{author: string}>;
 
 export async function generateStaticParams() {
-    const repos: Repository[] = JSON.parse(process.env.REPOSITORIES ?? '[]');
+    const repos = getRepositories();
     return repos.map((repo) => ({author: repo.author}));
 }
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
@@ -22,7 +22,7 @@ export default async function Page({
     params: Params
 }) {
     const { author } = await params;
-    const repoParams = (JSON.parse(process.env.REPOSITORIES ?? '[]') as Repository[]).find((r) => r.author === author);
+    const repoParams = getRepositories().find((r) => r.author === author);
     if(!repoParams) {
         return;
     }

@@ -1,5 +1,6 @@
 import LanguageDetect from "languagedetect";
 import { marked } from "marked";
+import {z} from "zod";
 
 type Repository = {
   author: string;
@@ -43,6 +44,16 @@ const GITHUB_RAW = "https://raw.githubusercontent.com";
 
 function rawRoot(recipe: RecipeType): string {
   return `${GITHUB_RAW}/${recipe.meta.author}/${recipe.meta.repository}/${recipe.meta.branch}/`;
+}
+
+function getRepositories(): Repository[] {
+  const repos: Repository[] = JSON.parse(process.env.REPOSITORIES ?? '[]');
+  const repositorySchema = z.object({
+    author: z.string(),
+    repository: z.string(),
+    branch: z.string(),
+  }).array();
+  return repositorySchema.parse(repos);
 }
 
 function parseRecipe(path: string, content: string, repository: Repository) {
@@ -110,5 +121,5 @@ function parseRecipe(path: string, content: string, repository: Repository) {
   return recipe;
 }
 
-export { parseRecipe, rawRoot };
+export { getRepositories, parseRecipe, rawRoot };
 export type { RecipeType, RecipeList, Repository, RecipeFiles };
