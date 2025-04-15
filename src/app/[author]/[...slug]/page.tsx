@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Metadata } from "next";
 import Recipe from "@/app/components/Recipe";
 import { getRepositories, parseRecipe, RecipeFiles } from "@/app/lib/Recipedata";
@@ -70,8 +70,8 @@ export default async function Page({
     }
 
     return (
-        <>
+        <Suspense>
             <Recipe recipe={parsed} />
-        </>
+        </Suspense>
     )
 }
