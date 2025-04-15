@@ -12,6 +12,7 @@ import MinusSVG from '@/app/svg/minus';
 import PlusSVG from '@/app/svg/plus';
 import GithubSVG from '@/app/svg/github';
 import Flag from '@/app/svg/Flag';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 type Props = {
   recipe: RecipeType;
@@ -26,8 +27,13 @@ function splitAmount(amount: string) {
 }
 
 export default function Recipe({recipe}: Props) {
-  const [multiplier, setMultiplier] = useState(1);
-  const [multiplierStr, setMultiplierStr] = useState("1");
+  const searchParams = useSearchParams();
+  const queryMultiplier = searchParams.get("m");
+  const router = useRouter();
+  const pathName = usePathname();
+
+  const [multiplier, setMultiplier] = useState(queryMultiplier ? parseFloat(queryMultiplier) : 1);
+  const [multiplierStr, setMultiplierStr] = useState("" + multiplier);
   const baseYields = useMemo(() => splitAmountList(recipe.yields).map(splitAmount), [recipe]);
   const [yields, setYields] = useState(splitAmountList(recipe.yields).map((amnt) => multiplyAmount(amnt, multiplier)));
   const [ingredientsOptions] = useState({renderer: {...ingredientRenderer(multiplier), ...linkRenderer()}});
@@ -47,14 +53,15 @@ export default function Recipe({recipe}: Props) {
 
   function adjustMultiplier(value: string, divisor: number = 1): void {
     const v = value.replace(/^0*/, "");
-    if(v === "" || v.startsWith("-")) {
-      setMultiplier(0);
-      setMultiplierStr("0");
-    } else {
-      const result = Number.parseFloat(v) / divisor;
-      setMultiplier(result);
-      setMultiplierStr(`${Number.parseFloat(new Fraction(result).simplify().valueOf().toFixed(2))}`);
-    }
+    const result = v === "" || v.startsWith("-") ? 0 : Number.parseFloat(v) / divisor;
+    setMultiplier(result);
+    setMultiplierStr(`${Number.parseFloat(new Fraction(result).simplify().valueOf().toFixed(2))}`);
+
+    // update search parameter
+    const current = new URLSearchParams(Array.from(searchParams.entries()));
+    current.set("m", "" + result);
+    const param = current.toString();
+    router.replace(`${pathName}${param ? '?' : ""}${param}`);
   }
 
   return (
