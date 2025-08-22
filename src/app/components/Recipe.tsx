@@ -97,14 +97,16 @@ export default function Recipe({recipe}: Props) {
                     </div>
                   );
                 })}
-                <div>
-                  <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier - 1 + "")}><MinusSVG /></button>
-                  <label className={styles['yields-label']}>
-                    <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value)} value={multiplierStr} />
-                    <span> (Multiplier)</span>
-                  </label>
-                  <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier + 1 + "")}><PlusSVG /></button>
-                </div>
+                {baseYields.includes(1) || (
+                  <div>
+                    <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier - 1 + "")}><MinusSVG /></button>
+                    <label className={styles['yields-label']}>
+                      <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value)} value={multiplierStr} />
+                      <span> (Multiplier)</span>
+                    </label>
+                    <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier + 1 + "")}><PlusSVG /></button>
+                  </div>
+                )}
               </div>
               <div className={styles.ingredients} dangerouslySetInnerHTML={{__html: ingredients}}></div>
             </div>
