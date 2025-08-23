@@ -12,7 +12,7 @@ import MinusSVG from '@/app/svg/minus';
 import PlusSVG from '@/app/svg/plus';
 import GithubSVG from '@/app/svg/github';
 import Flag from '@/app/svg/Flag';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useSearchParams, usePathname } from 'next/navigation';
 
 type Props = {
   recipe: RecipeType;
@@ -29,7 +29,6 @@ function splitAmount(amount: string) {
 export default function Recipe({recipe}: Props) {
   const searchParams = useSearchParams();
   const queryMultiplier = searchParams.get("m");
-  const router = useRouter();
   const pathName = usePathname();
 
   const [multiplier, setMultiplier] = useState(queryMultiplier ? parseFloat(queryMultiplier) : 1);
@@ -61,7 +60,8 @@ export default function Recipe({recipe}: Props) {
     const current = new URLSearchParams(Array.from(searchParams.entries()));
     current.set("m", "" + result);
     const param = current.toString();
-    router.replace(`${pathName}${param ? '?' : ""}${param}`);
+    const url = `${pathName}${param ? '?' : ""}${param}`;
+    window.history.replaceState({...window.history.state, as: url, url}, '', url);
   }
 
   return (
