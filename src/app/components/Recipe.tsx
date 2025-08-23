@@ -26,6 +26,10 @@ function splitAmount(amount: string) {
   }
 }
 
+function formatDecimal(number: number | bigint | string) {
+  return Number.parseFloat(new Fraction(number).simplify().valueOf().toFixed(2));
+}
+
 export default function Recipe({recipe}: Props) {
   const searchParams = useSearchParams();
   const queryMultiplier = searchParams.get("m");
@@ -40,8 +44,6 @@ export default function Recipe({recipe}: Props) {
   const [ingredients, setIngredients] = useMarkdown(recipe.ingredients, ingredientsOptions);
   const [instructions] = useMarkdown(recipe.instructions, {renderer: {...imageRenderer(rawRoot(recipe)), ...linkRenderer()}});
 
-  // document.title = `Recipe Web - ${recipe.title} - ${recipe.meta.author}`;
-
   useEffect(() => {
     setIngredients({renderer: {...ingredientRenderer(multiplier), ...linkRenderer()}});
   }, [multiplier, setIngredients]);
@@ -54,7 +56,7 @@ export default function Recipe({recipe}: Props) {
     const v = value.replace(/^0*/, "");
     const result = v === "" || v.startsWith("-") ? 0 : Number.parseFloat(v) / divisor;
     setMultiplier(result);
-    setMultiplierStr(`${Number.parseFloat(new Fraction(result).simplify().valueOf().toFixed(2))}`);
+    setMultiplierStr(`${formatDecimal(result)}`);
 
     // update search parameter
     const current = new URLSearchParams(Array.from(searchParams.entries()));
@@ -85,13 +87,27 @@ export default function Recipe({recipe}: Props) {
             <div className={styles['yields-and-ingredients']}>
               <div className={styles.yields}>
                 {yields.map((value, idx) => {
-                  const amount = splitAmountUnit(value);
+                  const yieldsItem = splitAmountUnit(value);
+
+                  const amounts = yieldsItem[0].split("-").map(item => {
+                    try {
+                      return formatDecimal(item);
+                    } catch {
+                      // yield can not be interpreted as number, assume 1 and add the yield as string, currently this fallback does not scale
+                      if (yieldsItem.length === 1) {
+                        yieldsItem.push(item);
+                        yieldsItem[0] = "1";
+                        return 1;
+                      }
+                      return item
+                    }
+                  });
                   return (
                     <div key={idx}>
                       <button className={styles['yields-btn']} onClick={() => adjustMultiplier(`${multiplier - 1 / baseYields[idx]}`)}><MinusSVG /></button>
                       <label className={styles['yields-label']}>
-                        <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value, baseYields[idx])} value={amount[0]} />
-                        <span>{amount.length > 1 && amount[1]}</span>
+                        <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value, baseYields[idx])} value={amounts[0]} />
+                        <span>{amounts.length > 1 && ` - ${amounts[1]}`}{yieldsItem.length > 1 && ` ${yieldsItem[1]}`}</span>
                       </label>
                       <button className={styles['yields-btn']} onClick={() => adjustMultiplier(`${multiplier + 1 / baseYields[idx]}`)}><PlusSVG /></button>
                     </div>

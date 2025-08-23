@@ -88,12 +88,12 @@ function replaceUnicodeFractions(str: string) {
 }
 
 function splitAmountList(list: string): string[] {
-  return list === "" ? [] : list.split(/(?<!\d),|,(?!\d)/);
+  return list === "" ? [] : list.replaceAll("–", "-").split(/(?<!\d),|,(?!\d)/);
 }
 
 function splitAmountUnit(amount: string): string[] {
   const isComma = amount.includes(",");
-  const num = /([0-9.,/]+)[-]?([0-9.,/]*)(.*)/.exec(amount.replace(",", "."));
+  const num = /([0-9.,/]+)\s?[-]?\s?([0-9.,/]*)(.*)/.exec(amount.replace(",", "."));
   if(num) {
     if(num[2] !== "") {
       // second part of range
