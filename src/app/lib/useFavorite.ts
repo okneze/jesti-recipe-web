@@ -1,3 +1,4 @@
+import { useCallback, useMemo } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 
 function sanitize(str: string) {
@@ -5,38 +6,39 @@ function sanitize(str: string) {
 }
 
 export function useFavorites(): readonly [(s: string) => boolean, (s:string) => void] {
-  const [favorite, setFavorite] = useLocalStorage<string[]>('favorites', []);
+  const [favorites, setFavorites] = useLocalStorage<string[]>('favorites', []);
 
-  function isFavorite(slug: string) {
-    return favorite.includes(sanitize(slug));
-  }
+  const isFavorite = useCallback((slug: string) => {
+    return favorites.includes(sanitize(slug));
+  }, [favorites]);
+
   function toggleFavorite(slug: string) {
-    setFavorite((() => {
-      const idx = favorite.indexOf(sanitize(slug));
-      if (idx === -1) {
-        return [...favorite, sanitize(slug)];
-      }
-      return favorite.toSpliced(idx);
-    })());
+    const saneSlug = sanitize(slug);
+    const idx = favorites.indexOf(saneSlug);
+    if (idx === -1) {
+      setFavorites([...favorites, saneSlug]);
+    } else {
+      setFavorites(favorites.toSpliced(idx));
+    }
   }
   return [isFavorite, toggleFavorite] as const;
 }
 
 export function useFavorite(slug: string): readonly [() => boolean, () => void] {
-  const [favorite, setFavorite] = useLocalStorage<string[]>('favorites', []);
-  const sanitizedSlug = sanitize(slug);
+  const [favorites, setFavorites] = useLocalStorage<string[]>('favorites', []);
+  const saneSlug = useMemo(() => sanitize(slug), [slug]);
 
-  function isFavorite() {
-    return favorite.includes(sanitizedSlug);
-  }
+  const isFavorite = useCallback(() => {
+    return favorites.includes(sanitize(saneSlug));
+  }, [favorites, saneSlug]);
+
   function toggleFavorite() {
-    setFavorite((() => {
-      const idx = favorite.indexOf(sanitizedSlug);
-      if (idx === -1) {
-        return [...favorite, sanitizedSlug];
-      }
-      return favorite.toSpliced(idx);
-    })());
+    const idx = favorites.indexOf(saneSlug);
+    if (idx === -1) {
+      setFavorites([...favorites, saneSlug]);
+    } else {
+      setFavorites(favorites.toSpliced(idx));
+    }
   }
   return [isFavorite, toggleFavorite] as const;
 }

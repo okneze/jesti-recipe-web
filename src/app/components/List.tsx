@@ -44,7 +44,7 @@ export default function List({recipes, repo}: Props) {
     }
     const tag = query.get("tag");
     return Object.values(recipes).filter((recipe) => (!repo?.author || recipe.meta.author === repo.author) && (!tag || recipe.tags.includes(tag))).toSorted((a, b) => (b.score + (isFavorite(b.meta.slug) ? FAVORITE_FACTOR : 0)) - (a.score + (isFavorite(a.meta.slug) ? FAVORITE_FACTOR : 0)));
-  }, [recipes, repo, query]);
+  }, [recipes, repo, query, isFavorite]);
 
   // TODO clean up setter
   const [sortedRecipes, setSortedRecipesInternal] = useState<RecipeType[]>([]);
@@ -74,7 +74,7 @@ export default function List({recipes, repo}: Props) {
     } else {
       setSortedRecipes(shuffleArray(recipesPrefiltered, seed));
     }
-  }, [search, recipes, repo, recipesPrefiltered, seed]);
+  }, [search, recipes, repo, recipesPrefiltered, seed, isFavorite]);
 
   function shuffleArray(array: RecipeType[], seed: number) {
     return array.toSorted((a, b) => hash(`${a.meta.slug}${seed}`) - hash(`${b.meta.slug}${seed}`));

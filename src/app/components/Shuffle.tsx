@@ -5,7 +5,7 @@ import ShuffleSVG from "../svg/shuffle";
 import styles from "@/app/styles/Shuffle.module.css";
 
 export default function Randomize() {
-    const [seed, setSeed] = useSeedContext();
+    const [, setSeed] = useSeedContext();
     function shuffle() {
         setSeed(Math.random());
     }
