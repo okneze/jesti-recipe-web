@@ -40,6 +40,12 @@
     display: flex;
     align-items: flex-start;
     flex-direction: column;
+
+    & h1 {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
 }
 
 .icon {
@@ -129,15 +135,17 @@
     margin-top: 32px;
 }
 
-.instructions {
-    & li + li {
-        margin-top: 8px;
-    }
-}
-
 .github {
     display: inline;
     margin-left: 0.25em;
+}
+
+.favorite {
+    background: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
 }
 
 @media print {

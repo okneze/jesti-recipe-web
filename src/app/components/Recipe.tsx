@@ -11,8 +11,10 @@ import { imageRenderer, ingredientRenderer, linkRenderer, multiplyAmount, splitA
 import MinusSVG from '@/app/svg/minus';
 import PlusSVG from '@/app/svg/plus';
 import GithubSVG from '@/app/svg/github';
+import HeartSVG from '../svg/heart';
 import Flag from '@/app/svg/Flag';
 import { useSearchParams, usePathname } from 'next/navigation';
+import { useFavorite } from '../lib/useFavorite';
 
 type Props = {
   recipe: RecipeType;
@@ -44,6 +46,8 @@ export default function Recipe({recipe}: Props) {
   const [ingredients, setIngredients] = useMarkdown(recipe.ingredients, ingredientsOptions);
   const [instructions] = useMarkdown(recipe.instructions, {renderer: {...imageRenderer(rawRoot(recipe)), ...linkRenderer()}});
 
+  const [isFavorite, toggleFavorite] = useFavorite(recipe.meta.slug);
+
   useEffect(() => {
     setIngredients({renderer: {...ingredientRenderer(multiplier), ...linkRenderer()}});
   }, [multiplier, setIngredients]);
@@ -74,6 +78,7 @@ export default function Recipe({recipe}: Props) {
               {recipe.title}
               <GithubSVG aria-hidden="true" className={styles.github} />
             </a>
+            <button onClick={toggleFavorite} aria-pressed={isFavorite()} title={isFavorite() ? 'Remove favorite' : 'Add favorite'} className={styles.favorite}><HeartSVG filled={isFavorite()} /></button>
           </h1>
           <a className={styles.author} href={`/${recipe.meta.author}`}>@{recipe.meta.author}</a>
           <div className={styles.tags}>

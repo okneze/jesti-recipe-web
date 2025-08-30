@@ -1,0 +1,9 @@
+.fg {
+    fill: #c81229;
+}
+
+.bg {
+    fill: white;
+    transform: scale(0.95);
+    transform-origin: center;
+}

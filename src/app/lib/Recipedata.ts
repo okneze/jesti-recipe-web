@@ -18,6 +18,7 @@ type RecipeType = {
   ingredients: string;
   instructions: string;
   language: string;
+  score: number;
 };
 
 type RecipeMeta = Repository & {
@@ -72,6 +73,7 @@ function parseRecipe(path: string, content: string, repository: Repository) {
     ingredients: "",
     instructions: "",
     language: "",
+    score: 0,
   };
 
   let blockCount = 0;

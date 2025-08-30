@@ -5,6 +5,11 @@
   padding: 11px 10px;
   border: 1px solid var(--black);
   border-radius: 6px;
+  transition: transform 300ms;
+
+  &:hover, &:focus {
+    transform: scale(1.15) rotate(var(--rotate, 2deg));
+  }
 }
 .title {
   font-size: var(--font-h1);

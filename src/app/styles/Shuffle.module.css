@@ -1,0 +1,19 @@
+.button {
+  background: none;
+  text-decoration: none;
+  flex-shrink: 0;
+  padding: 9px 8px;
+  border: 1px solid var(--black);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 300ms;
+
+  & svg {
+    width: 22px;
+    height: 20px;
+  }
+
+  &:hover, &:focus {
+    transform: scale(1.15) rotate(var(--rotate, 2deg));
+  }
+}
