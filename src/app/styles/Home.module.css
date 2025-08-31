@@ -25,7 +25,7 @@
     transition: transform 300ms;
 }
 
-.card:hover, .card:focus {
+.card:hover, .card:focus-visible {
     transform: scale(1.05) rotate(var(--rotate, 2deg));
 
     & .author {

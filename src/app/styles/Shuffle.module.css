@@ -13,7 +13,7 @@
     height: 20px;
   }
 
-  &:hover, &:focus {
+  &:hover, &:focus-visible {
     transform: scale(1.15) rotate(var(--rotate, 2deg));
   }
 }

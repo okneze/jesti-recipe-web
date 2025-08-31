@@ -7,7 +7,7 @@
   border-radius: 6px;
   transition: transform 300ms;
 
-  &:hover, &:focus {
+  &:hover, &:focus-visible {
     transform: scale(1.15) rotate(var(--rotate, 2deg));
   }
 }
