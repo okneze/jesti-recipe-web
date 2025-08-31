@@ -19,7 +19,6 @@
     border: none;
     border-radius: var(--radius);
     border: 1px solid var(--black);
-    overflow: hidden;
 
     text-decoration: none;
     transition: transform 300ms;
@@ -27,6 +26,7 @@
 
 .card:hover, .card:focus-visible {
     transform: scale(1.05) rotate(var(--rotate, 2deg));
+    z-index: 10;
 
     & .author {
         opacity: 1;
@@ -63,6 +63,7 @@
     justify-content: center;
 
     border-bottom-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
     border-left: 1px solid var(--black);
     border-bottom: 1px solid var(--black);
     opacity: 0;
@@ -78,6 +79,8 @@
     object-fit: cover;
     width: 100%;
     height: auto;
+    border-top-left-radius: calc(var(--radius) - 1px);
+    border-top-right-radius: calc(var(--radius) - 1px);
 }
 
 .no-preview {
@@ -107,10 +110,28 @@
 
 .favorite {
     position: absolute;
-    top: 16px;
-    left: 16px;
-    width: 40px;
+    left: 0;
+    top: 0;
+    padding-inline: 10px;
     height: 40px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-bottom-right-radius: var(--radius);
+    border-right: 1px solid var(--black);
+    border-bottom: 1px solid var(--black);
+    border-left: 1px solid white;
+    border-top: 1px solid white;
+
+    font-weight: 700;
+    color: var(--gray);
+    transform: translate(-1.3px, -1.3px);
+
+    & svg {
+        width: 24px;
+    }
 }
 
 @media (width < 560px) {
