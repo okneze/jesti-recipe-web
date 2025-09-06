@@ -16,6 +16,7 @@ import { useSearchContext } from '@/app/context/search';
 import { useFavorites } from '../lib/useFavorite';
 import { createHash } from 'crypto';
 import { useSeedContext } from '../context/seed';
+import ImageFallback from './ImageFallback';
 
 type Props = {
   recipes?: RecipeList,
@@ -99,7 +100,9 @@ export default function List({recipes, repo}: Props) {
         {sortedRecipes.map((recipe) => {
           return (
             <Link href={`/${recipe.meta.slug}`} key={recipe.meta.slug} className={styles.card} style={{'--rotate': `${Math.random() * 4 - 2}deg`} as React.CSSProperties}>
-              {recipe.imagePath.length > 1 ? <Image className={styles.preview} src={recipe.imagePath} alt="" width={400} height={300} loading='lazy' /> : <div className={styles['no-preview']}><FoodSVG /></div>}
+              <ImageFallback src={recipe.imagePath} className={styles.preview} width={400} height={300} loading='lazy' alt="">
+                <div className={styles['no-preview']}><FoodSVG /></div>
+              </ImageFallback>
               {isFavorite(recipe.meta.slug) && <div className={styles.favorite}><HeartSVG /></div>}
               <div className={styles.author}>@{recipe.meta.author}</div>
               <div className={styles['card-content']}>
