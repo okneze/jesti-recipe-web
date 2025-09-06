@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import HouseSVG from '@/app/svg/house';
+import HouseSVG from '@/app/svg/fontawesome/house';
 import styles from '@/app/styles/App.module.css';
 import "@/app/globals.css";
 import Search from "@/app/components/Search";
