@@ -4,7 +4,6 @@ import React from 'react';
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import Fuse from 'fuse.js';
 
 import styles from '@/app/styles/Home.module.css';
