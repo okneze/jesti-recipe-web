@@ -8,10 +8,10 @@ import { rawRoot, RecipeType } from '@/app/lib/Recipedata';
 import { useMarkdown } from '@/app/lib/useMarkdown';
 import { imageRenderer, ingredientRenderer, linkRenderer, multiplyAmount, splitAmountList, splitAmountUnit } from '@/app/lib/marked';
 
-import MinusSVG from '@/app/svg/minus';
-import PlusSVG from '@/app/svg/plus';
+import MinusSVG from '@/app/svg/fontawesome/minus';
+import PlusSVG from '@/app/svg/fontawesome/plus';
 import GithubSVG from '@/app/svg/github';
-import HeartSVG from '../svg/heart';
+import HeartSVG from '../svg/fontawesome/heart';
 import Flag from '@/app/svg/Flag';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { useFavorite } from '../lib/useFavorite';

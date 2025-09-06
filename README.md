@@ -60,6 +60,10 @@ Note that this setup only works for reacting to changes from recipe repos you ha
 
 That's it! You can test the connection by manually triggering a run of the workflow in your recipes repo, and then check if a corresponding run is triggered in your recipe-web repo.
 
+## Attributions
+
+Flag Icons by [Twitter](https://github.com/twitter/twemoji).
+
 ## License
 
 This program is free software: you can redistribute it and/or modify

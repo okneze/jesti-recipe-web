@@ -1,7 +1,7 @@
 'use client'
 
 import { useSeedContext } from "../context/seed";
-import ShuffleSVG from "../svg/shuffle";
+import ShuffleSVG from "../svg/fontawesome/shuffle";
 import styles from "@/app/styles/Shuffle.module.css";
 
 export default function Randomize() {

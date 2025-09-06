@@ -8,10 +8,10 @@ import Image from 'next/image';
 import Fuse from 'fuse.js';
 
 import styles from '@/app/styles/Home.module.css';
-import {RecipeList, RecipeType, Repository} from '@/app/lib/Recipedata';
-import FoodSVG from '@/app/svg/food';
+import { RecipeList, RecipeType, Repository } from '@/app/lib/Recipedata';
+import FoodSVG from '@/app/svg/fontawesome/food';
 import GithubSVG from '@/app/svg/github';
-import HeartSVG from '../svg/heart';
+import HeartSVG from '../svg/fontawesome/heart';
 import { useSearchContext } from '@/app/context/search';
 import { useFavorites } from '../lib/useFavorite';
 import { createHash } from 'crypto';
