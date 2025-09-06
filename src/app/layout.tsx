@@ -39,7 +39,7 @@ export default function RootLayout({
               </div>
             </header>
             <main>{children}</main>
-            <footer className={styles.footer}>©2025, Robin Heinbockel<br />recipes provided by the respective GitHub users</footer>
+            <footer className={styles.footer}>Made with 🍴 by Robin Heinbockel</footer>
           </SeedProvider>
         </SearchProvider>
       </body>

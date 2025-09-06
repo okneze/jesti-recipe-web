@@ -1,7 +1,5 @@
 # RecipeMD Web
 
-_wip_
-
 Displaying recipes in [RecipeMD format](https://github.com/RecipeMD/RecipeMD) through the magic of Next.js.
 
 ## Running your own instance
