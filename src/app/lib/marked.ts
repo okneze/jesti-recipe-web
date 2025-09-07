@@ -42,7 +42,7 @@ function imageRenderer(root: string): RendererObject {
       }
       href = cleanHref;
 
-      let out = `<img src="${href}" alt="${text}"`;
+      let out = `<img src="${href}" alt="${text}" onerror="console.info('Broken image: ${href}'); this.remove()"`;
       if (title) {
         out += ` title="${escape(title)}"`;
       }
