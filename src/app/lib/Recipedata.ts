@@ -57,6 +57,19 @@ function getRepositories(): Repository[] {
   return repositorySchema.parse(repos);
 }
 
+function getGitHubHeaders(): Record<string, string> {
+  const token = process.env.GITHUB_TOKEN;
+  const headers: Record<string, string> = {
+    'Accept': 'application/vnd.github.v3+json',
+  };
+  
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
+  return headers;
+}
+
 function parseRecipe(path: string, content: string, repository: Repository) {
 
   const recipe: RecipeType = {
@@ -123,5 +136,5 @@ function parseRecipe(path: string, content: string, repository: Repository) {
   return recipe;
 }
 
-export { getRepositories, parseRecipe, rawRoot };
+export { getRepositories, parseRecipe, rawRoot, getGitHubHeaders };
 export type { RecipeType, RecipeList, Repository, RecipeFiles };
