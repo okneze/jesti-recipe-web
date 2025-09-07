@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  output: 'export',
+  // Removed 'output: export' for Railway deployment
+  // output: 'export',
   // experimental: {
   //   turbo: {
   //     rules: {
