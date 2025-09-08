@@ -40,7 +40,7 @@ export default async function Home() {
         recipes[parsed.meta.slug] = parsed;
       };
       
-    } catch (error) {
+    } catch {
       return (
         <div>
           <h1>Error 500</h1>
