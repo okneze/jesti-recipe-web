@@ -19,7 +19,7 @@ export default async function Home() {
     
     try {
       const response = await fetch(apiUrl, {
-        cache: 'force-cache',
+        cache: 'no-store', // Temporarily disable caching for debugging
         headers: headers
       });
       
@@ -58,7 +58,7 @@ export default async function Home() {
         const root = `https://raw.githubusercontent.com/${repository.author}/${repository.repository}/${repository.branch}/`;
         const recipeURL = new URL(element.path, root).href;
         const recipe = await fetch(recipeURL, {
-          cache: 'force-cache',
+          cache: 'no-store', // Temporarily disable caching for debugging
           headers: headers
         }).then((raw) => raw.text());
         const parsed = parseRecipe(element.path, recipe, repository);
