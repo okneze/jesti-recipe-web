@@ -7,32 +7,74 @@ export default async function Home() {
   const recipes: RecipeList = {};
   const headers = getGitHubHeaders();
   
+  // Debug info
+  console.log('Environment check:', {
+    nodeEnv: process.env.NODE_ENV,
+    hasGitHubToken: !!process.env.GITHUB_TOKEN,
+    repositories: repos
+  });
+  
   for(const repository of repos) {
-    const repo: RecipeFiles = await fetch(`https://api.github.com/repos/${repository.author}/${repository.repository}/git/trees/${repository.branch}?recursive=1`, {
-      cache: 'force-cache',
-      headers: headers
-    }).then((res) => res.json());
+    const apiUrl = `https://api.github.com/repos/${repository.author}/${repository.repository}/git/trees/${repository.branch}?recursive=1`;
     
-    if(!repo.tree) {
+    try {
+      const response = await fetch(apiUrl, {
+        cache: 'force-cache',
+        headers: headers
+      });
+      
+      console.log('GitHub API Response:', {
+        url: apiUrl,
+        status: response.status,
+        statusText: response.statusText,
+        hasAuth: !!headers.Authorization
+      });
+      
+      const repo: RecipeFiles = await response.json();
+      
+      if(!repo.tree) {
+        console.error('GitHub API Error:', repo);
+        return (
+          <div>
+            <h1>Error 500</h1>
+            <p>Could not fetch data from GitHub API.</p>
+            <details>
+              <summary>Debug Info</summary>
+              <pre>{JSON.stringify({
+                url: apiUrl,
+                status: response.status,
+                hasToken: !!process.env.GITHUB_TOKEN,
+                response: repo
+              }, null, 2)}</pre>
+            </details>
+          </div>
+        );
+      }
+
+      const recipeList = repo.tree.filter((node) => (node.path.endsWith(".md") && node.path !== "README.md"));
+      console.log('Found recipe files:', recipeList.map(r => r.path));
+      
+      for (const element of recipeList) {
+        const root = `https://raw.githubusercontent.com/${repository.author}/${repository.repository}/${repository.branch}/`;
+        const recipeURL = new URL(element.path, root).href;
+        const recipe = await fetch(recipeURL, {
+          cache: 'force-cache',
+          headers: headers
+        }).then((raw) => raw.text());
+        const parsed = parseRecipe(element.path, recipe, repository);
+        recipes[parsed.meta.slug] = parsed;
+      };
+      
+    } catch (error) {
+      console.error('Error fetching repository:', error);
       return (
         <div>
           <h1>Error 500</h1>
-          <p>Could not fetch data.</p>
+          <p>Network error while fetching recipes.</p>
+          <pre>{String(error)}</pre>
         </div>
       );
     }
-
-    const recipeList = repo.tree.filter((node) => (node.path.endsWith(".md") && node.path !== "README.md"));
-    for (const element of recipeList) {
-      const root = `https://raw.githubusercontent.com/${repository.author}/${repository.repository}/${repository.branch}/`;
-      const recipeURL = new URL(element.path, root).href;
-      const recipe = await fetch(recipeURL, {
-        cache: 'force-cache',
-        headers: headers
-      }).then((raw) => raw.text());
-      const parsed = parseRecipe(element.path, recipe, repository);
-      recipes[parsed.meta.slug] = parsed;
-    };
   }
   return (
     <Suspense>
