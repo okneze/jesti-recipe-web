@@ -9,10 +9,10 @@ export function middleware(request: NextRequest) {
     const authValue = basicAuth.split(' ')[1];
     const [user, pwd] = atob(authValue).split(':');
 
-    const validUser = process.env.BASIC_AUTH_USER || 'rezepte';
-    const validPassword = process.env.BASIC_AUTH_PASSWORD || 'jakobistsounglaublichtapfer';
+    const validUser = process.env.BASIC_AUTH_USER;
+    const validPassword = process.env.BASIC_AUTH_PASSWORD;
 
-    if (user === validUser && pwd === validPassword) {
+    if (validUser && validPassword && user === validUser && pwd === validPassword) {
       return NextResponse.next();
     }
   }
