@@ -1,15 +1,19 @@
 import React, { Suspense } from "react";
 import { Metadata } from "next";
 import Recipe from "@/app/components/Recipe";
-import { getRepositories, parseRecipe, RecipeFiles } from "@/app/lib/Recipedata";
+import { getRepositories, parseRecipe, RecipeFiles, getGitHubHeaders } from "@/app/lib/Recipedata";
 
 type Params = Promise<{author: string, slug: string[]}>;
 
 export async function generateStaticParams() {
     const repos = getRepositories();
+    const headers = getGitHubHeaders();
     const result: {author: string, slug: string[]}[] = [];
     for(const {author, repository, branch} of repos) {
-        const r: RecipeFiles = await fetch(`https://api.github.com/repos/${author}/${repository}/git/trees/${branch}?recursive=1`, {cache: 'force-cache'}).then((res) => res.json());
+        const r: RecipeFiles = await fetch(`https://api.github.com/repos/${author}/${repository}/git/trees/${branch}?recursive=1`, {
+            next: { revalidate: 300 }, // Cache for 5 minutes
+            headers: headers
+        }).then((res) => res.json());
         if(!r.tree) {
             continue;
         }
@@ -36,11 +40,15 @@ async function getRecipe({author, slug}: {author: string, slug: string[]}) {
     if(!repo) {
         return;
     }
+    const headers = getGitHubHeaders();
     const root = `https://raw.githubusercontent.com/${author}/${repo.repository}/${repo.branch}/`;
     const relativePath = slug.join("/") + ".md";
     const recipeURL = new URL(relativePath, root).href;
 
-    const recipe = await fetch(recipeURL, {cache: 'force-cache'}).then((raw) => raw.text());
+    const recipe = await fetch(recipeURL, {
+        next: { revalidate: 300 }, // Cache for 5 minutes
+        headers: headers
+    }).then((raw) => raw.text());
     return parseRecipe(relativePath, recipe, repo);
 }
 
