@@ -1,0 +1,8 @@
+# Create password file first:
+# htpasswd -c /path/to/.htpasswd rezepte
+# Enter password: jakobistsounglaublichtapfer
+
+AuthType Basic
+AuthName "Recipe Access"
+AuthUserFile /path/to/.htpasswd
+Require valid-user
