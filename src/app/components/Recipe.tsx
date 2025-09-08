@@ -70,6 +70,20 @@ export default function Recipe({recipe}: Props) {
     window.history.replaceState({...window.history.state, as: url, url}, '', url);
   }
 
+  function increaseMultiplier(divisor: number = 1) {
+    if (multiplier < 1 / divisor) {
+      return adjustMultiplier(`${multiplier * 2}`);
+    }
+    return adjustMultiplier(`${multiplier + 1 / divisor}`);
+  }
+
+  function decreaseMultiplier(divisor: number = 1) {
+    if (multiplier <= 1 / divisor) {
+      return adjustMultiplier(`${multiplier / 2}`);
+    }
+    return adjustMultiplier(`${multiplier - 1 / divisor}`);
+  }
+
   return (
       <div className={styles.layout}>
         <div className={styles.head}>
@@ -109,23 +123,23 @@ export default function Recipe({recipe}: Props) {
                   });
                   return (
                     <div key={idx}>
-                      <button className={styles['yields-btn']} onClick={() => adjustMultiplier(`${multiplier - 1 / baseYields[idx]}`)}><MinusSVG /></button>
+                      <button className={styles['yields-btn']} onClick={() => decreaseMultiplier(baseYields[idx])}><MinusSVG /></button>
                       <label className={styles['yields-label']}>
                         <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value, baseYields[idx])} value={amounts[0]} />
                         <span>{amounts.length > 1 && ` - ${amounts[1]}`}{yieldsItem.length > 1 && ` ${yieldsItem[1]}`}</span>
                       </label>
-                      <button className={styles['yields-btn']} onClick={() => adjustMultiplier(`${multiplier + 1 / baseYields[idx]}`)}><PlusSVG /></button>
+                      <button className={styles['yields-btn']} onClick={() => increaseMultiplier(baseYields[idx])}><PlusSVG /></button>
                     </div>
                   );
                 })}
                 {baseYields.includes(1) || (
                   <div>
-                    <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier - 1 + "")}><MinusSVG /></button>
+                    <button className={styles['yields-btn']} onClick={() => decreaseMultiplier()}><MinusSVG /></button>
                     <label className={styles['yields-label']}>
                       <input type='number' className={styles['yields-input']} onChange={(event) => adjustMultiplier(event.target.value)} value={multiplierStr} />
                       <span> (Multiplier)</span>
                     </label>
-                    <button className={styles['yields-btn']} onClick={() => adjustMultiplier(multiplier + 1 + "")}><PlusSVG /></button>
+                    <button className={styles['yields-btn']} onClick={() => increaseMultiplier()}><PlusSVG /></button>
                   </div>
                 )}
               </div>
