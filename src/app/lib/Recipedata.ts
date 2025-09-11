@@ -47,6 +47,49 @@ function rawRoot(recipe: RecipeType): string {
   return `${GITHUB_RAW}/${recipe.meta.author}/${recipe.meta.repository}/${recipe.meta.branch}/`;
 }
 
+function proxyImageUrl(imagePath: string, recipe: RecipeType): string {
+  // Create proxy URL for authenticated image access
+  const params = new URLSearchParams({
+    author: recipe.meta.author,
+    repository: recipe.meta.repository,
+    branch: recipe.meta.branch,
+    path: imagePath
+  });
+  return `/api/image?${params.toString()}`;
+}
+
+function convertRawGitHubUrlToProxy(imageUrl: string): string | null {
+  // Check if it's a raw.githubusercontent.com URL
+  const match = imageUrl.match(/^https:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.+)$/);
+  if (match) {
+    const [, author, repository, branch, path] = match;
+    const params = new URLSearchParams({
+      author,
+      repository,
+      branch,
+      path
+    });
+    return `/api/image?${params.toString()}`;
+  }
+  return null;
+}
+
+function processImageUrl(imageUrl: string, recipe: RecipeType): string {
+  // Check if it's a relative path (doesn't start with http)
+  if (!imageUrl.startsWith('http')) {
+    return proxyImageUrl(imageUrl, recipe);
+  }
+  
+  // Check if it's a raw.githubusercontent.com URL that needs proxying
+  const proxyUrl = convertRawGitHubUrlToProxy(imageUrl);
+  if (proxyUrl) {
+    return proxyUrl;
+  }
+  
+  // For other absolute URLs, use them directly
+  return imageUrl;
+}
+
 function getRepositories(): Repository[] {
   const repos: Repository[] = JSON.parse(process.env.REPOSITORIES ?? '[]');
   const repositorySchema = z.object({
@@ -131,10 +174,11 @@ function parseRecipe(path: string, content: string, repository: Repository) {
   // get the first image
   const matches = /!\[.*?\]\((.+?)\)|<img.+?src="(.+?)"/g.exec(content);
   if(matches) {
-    recipe.imagePath = new URL(matches[1] ?? matches[2], rawRoot(recipe)).href;
+    const imagePath = matches[1] ?? matches[2];
+    recipe.imagePath = processImageUrl(imagePath, recipe);
   }
   return recipe;
 }
 
-export { getRepositories, parseRecipe, rawRoot, getGitHubHeaders };
+export { getRepositories, parseRecipe, rawRoot, getGitHubHeaders, proxyImageUrl, convertRawGitHubUrlToProxy, processImageUrl };
 export type { RecipeType, RecipeList, Repository, RecipeFiles };

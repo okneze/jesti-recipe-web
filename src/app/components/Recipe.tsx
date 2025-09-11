@@ -42,9 +42,9 @@ export default function Recipe({recipe}: Props) {
   const baseYields = useMemo(() => splitAmountList(recipe.yields).map(splitAmount), [recipe]);
   const [yields, setYields] = useState(splitAmountList(recipe.yields).map((amnt) => multiplyAmount(amnt, multiplier)));
   const [ingredientsOptions] = useState({renderer: {...ingredientRenderer(multiplier), ...linkRenderer()}});
-  const [description] = useMarkdown(recipe.description, {renderer: {...imageRenderer(rawRoot(recipe)), ...linkRenderer()}});
+  const [description] = useMarkdown(recipe.description, {renderer: {...imageRenderer(rawRoot(recipe), recipe.meta.author, recipe.meta.repository, recipe.meta.branch), ...linkRenderer()}});
   const [ingredients, setIngredients] = useMarkdown(recipe.ingredients, ingredientsOptions);
-  const [instructions] = useMarkdown(recipe.instructions, {renderer: {...imageRenderer(rawRoot(recipe)), ...linkRenderer()}});
+  const [instructions] = useMarkdown(recipe.instructions, {renderer: {...imageRenderer(rawRoot(recipe), recipe.meta.author, recipe.meta.repository, recipe.meta.branch), ...linkRenderer()}});
 
   const [isFavorite, toggleFavorite] = useFavorite(recipe.meta.slug);
 

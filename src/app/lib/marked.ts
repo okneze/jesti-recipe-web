@@ -1,5 +1,6 @@
 import Fraction from "fraction.js";
 import { RendererObject, Tokens } from "marked";
+import { convertRawGitHubUrlToProxy } from "./Recipedata";
 // Override function
 
 // HELPERS FROM https://github.com/markedjs/marked/blob/master/src/helpers.ts
@@ -33,16 +34,37 @@ function cleanUrl(href: string) {
   return href;
 }
 
-function imageRenderer(root: string): RendererObject {
+function imageRenderer(root: string, author: string, repository: string, branch: string): RendererObject {
   return {
     image({ href, title, text }: Tokens.Image): string {
-      const cleanHref = cleanUrl(new URL(href, root).href);
-      if (cleanHref === null) {
-        return escape(text);
+      let imageUrl: string;
+      
+      // Check if it's a relative path (doesn't start with http)
+      if (!href.startsWith('http')) {
+        // Create proxy URL for authenticated image access
+        const params = new URLSearchParams({
+          author: author,
+          repository: repository,
+          branch: branch,
+          path: href
+        });
+        imageUrl = `/api/image?${params.toString()}`;
+      } else {
+        // Check if it's a raw.githubusercontent.com URL that needs proxying
+        const proxyUrl = convertRawGitHubUrlToProxy(href);
+        if (proxyUrl) {
+          imageUrl = proxyUrl;
+        } else {
+          // For other absolute URLs, use them directly
+          const cleanHref = cleanUrl(href);
+          if (cleanHref === null) {
+            return escape(text);
+          }
+          imageUrl = cleanHref;
+        }
       }
-      href = cleanHref;
 
-      let out = `<img src="${href}" alt="${text}" onerror="console.info('Broken image: ${href}'); this.remove()"`;
+      let out = `<img src="${imageUrl}" alt="${text}" onerror="console.info('Broken image: ${imageUrl}'); this.remove()"`;
       if (title) {
         out += ` title="${escape(title)}"`;
       }
