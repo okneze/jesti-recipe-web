@@ -47,6 +47,17 @@ function rawRoot(recipe: RecipeType): string {
   return `${GITHUB_RAW}/${recipe.meta.author}/${recipe.meta.repository}/${recipe.meta.branch}/`;
 }
 
+function proxyImageUrl(imagePath: string, recipe: RecipeType): string {
+  // Create proxy URL for authenticated image access
+  const params = new URLSearchParams({
+    author: recipe.meta.author,
+    repository: recipe.meta.repository,
+    branch: recipe.meta.branch,
+    path: imagePath
+  });
+  return `/api/image?${params.toString()}`;
+}
+
 function getRepositories(): Repository[] {
   const repos: Repository[] = JSON.parse(process.env.REPOSITORIES ?? '[]');
   const repositorySchema = z.object({
@@ -131,10 +142,16 @@ function parseRecipe(path: string, content: string, repository: Repository) {
   // get the first image
   const matches = /!\[.*?\]\((.+?)\)|<img.+?src="(.+?)"/g.exec(content);
   if(matches) {
-    recipe.imagePath = new URL(matches[1] ?? matches[2], rawRoot(recipe)).href;
+    const imagePath = matches[1] ?? matches[2];
+    // Check if it's a relative path (doesn't start with http)
+    if (!imagePath.startsWith('http')) {
+      recipe.imagePath = proxyImageUrl(imagePath, recipe);
+    } else {
+      recipe.imagePath = imagePath;
+    }
   }
   return recipe;
 }
 
-export { getRepositories, parseRecipe, rawRoot, getGitHubHeaders };
+export { getRepositories, parseRecipe, rawRoot, getGitHubHeaders, proxyImageUrl };
 export type { RecipeType, RecipeList, Repository, RecipeFiles };

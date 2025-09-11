@@ -16,37 +16,46 @@ export default async function Home() {
         headers: headers
       });
       
+      if (!response.ok) {
+        console.warn(`Failed to fetch repository ${repository.author}/${repository.repository}: ${response.status} ${response.statusText}`);
+        continue;
+      }
+      
       const repo: RecipeFiles = await response.json();
       
       if(!repo.tree) {
-        return (
-          <div>
-            <h1>Error 500</h1>
-            <p>Could not fetch data from GitHub API.</p>
-          </div>
-        );
+        console.warn(`No tree data found for ${repository.author}/${repository.repository}`);
+        continue;
       }
 
       const recipeList = repo.tree.filter((node) => (node.path.endsWith(".md") && node.path !== "README.md"));
       
       for (const element of recipeList) {
-        const root = `https://raw.githubusercontent.com/${repository.author}/${repository.repository}/${repository.branch}/`;
-        const recipeURL = new URL(element.path, root).href;
-        const recipe = await fetch(recipeURL, {
-          next: { revalidate: 300 }, // Cache for 5 minutes
-          headers: headers
-        }).then((raw) => raw.text());
-        const parsed = parseRecipe(element.path, recipe, repository);
-        recipes[parsed.meta.slug] = parsed;
+        try {
+          const root = `https://raw.githubusercontent.com/${repository.author}/${repository.repository}/${repository.branch}/`;
+          const recipeURL = new URL(element.path, root).href;
+          const recipeResponse = await fetch(recipeURL, {
+            next: { revalidate: 300 }, // Cache for 5 minutes
+            headers: headers
+          });
+          
+          if (!recipeResponse.ok) {
+            console.warn(`Failed to fetch recipe ${element.path}: ${recipeResponse.status} ${recipeResponse.statusText}`);
+            continue;
+          }
+          
+          const recipe = await recipeResponse.text();
+          const parsed = parseRecipe(element.path, recipe, repository);
+          recipes[parsed.meta.slug] = parsed;
+        } catch (error) {
+          console.warn(`Error processing recipe ${element.path}:`, error);
+          continue;
+        }
       };
       
-    } catch {
-      return (
-        <div>
-          <h1>Error 500</h1>
-          <p>Network error while fetching recipes.</p>
-        </div>
-      );
+    } catch (error) {
+      console.error(`Network error while fetching repository ${repository.author}/${repository.repository}:`, error);
+      continue;
     }
   }
   return (

@@ -10,25 +10,37 @@ export async function generateStaticParams() {
     const headers = getGitHubHeaders();
     const result: {author: string, slug: string[]}[] = [];
     for(const {author, repository, branch} of repos) {
-        const r: RecipeFiles = await fetch(`https://api.github.com/repos/${author}/${repository}/git/trees/${branch}?recursive=1`, {
-            next: { revalidate: 300 }, // Cache for 5 minutes
-            headers: headers
-        }).then((res) => res.json());
-        if(!r.tree) {
-            continue;
-        }
-        for(const entry of r.tree) {
-            if(entry.path.endsWith(".md") && !entry.path.endsWith("README.md")) {
-                const page = {
-                    author: author,
-                    slug: entry.path.replace(/\.md$/, "").split("/"),
-                };
-                // special characters are not resolved correctly in development environment
-                if(process.env.NODE_ENV === "development") {
-                    page.slug = page.slug.map(fragment => encodeURIComponent(fragment));
-                }
-                result.push(page);
+        try {
+            const response = await fetch(`https://api.github.com/repos/${author}/${repository}/git/trees/${branch}?recursive=1`, {
+                next: { revalidate: 300 }, // Cache for 5 minutes
+                headers: headers
+            });
+            
+            if (!response.ok) {
+                console.warn(`Failed to fetch repository ${author}/${repository}: ${response.status} ${response.statusText}`);
+                continue;
             }
+            
+            const r: RecipeFiles = await response.json();
+            if(!r.tree) {
+                continue;
+            }
+            for(const entry of r.tree) {
+                if(entry.path.endsWith(".md") && !entry.path.endsWith("README.md")) {
+                    const page = {
+                        author: author,
+                        slug: entry.path.replace(/\.md$/, "").split("/"),
+                    };
+                    // special characters are not resolved correctly in development environment
+                    if(process.env.NODE_ENV === "development") {
+                        page.slug = page.slug.map(fragment => encodeURIComponent(fragment));
+                    }
+                    result.push(page);
+                }
+            }
+        } catch (error) {
+            console.warn(`Error processing repository ${author}/${repository}:`, error);
+            continue;
         }
     };
 

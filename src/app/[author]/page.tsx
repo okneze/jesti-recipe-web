@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { Metadata } from "next";
 import List from "@/app/components/List";
-import { getRepositories, parseRecipe, RecipeFiles, RecipeList } from "@/app/lib/Recipedata";
+import { getRepositories, parseRecipe, RecipeFiles, RecipeList, getGitHubHeaders } from "@/app/lib/Recipedata";
 
 type Params = Promise<{author: string}>;
 
@@ -26,7 +26,11 @@ export default async function Page({
     if(!repoParams) {
         return;
     }
-    const repo: RecipeFiles = await fetch(`https://api.github.com/repos/${author}/${repoParams.repository}/git/trees/${repoParams.branch}?recursive=1`, {cache: 'force-cache'}).then((res) => res.json());
+    const headers = getGitHubHeaders();
+    const repo: RecipeFiles = await fetch(`https://api.github.com/repos/${author}/${repoParams.repository}/git/trees/${repoParams.branch}?recursive=1`, {
+        cache: 'force-cache',
+        headers: headers
+    }).then((res) => res.json());
     if(!repo.tree) {
         return (
             <div>
@@ -42,7 +46,10 @@ export default async function Page({
         const root = `https://raw.githubusercontent.com/${author}/${repoParams.repository}/${repoParams.branch}/`;
         const recipeURL = new URL(element.path, root).href;
 
-        const recipe = await fetch(recipeURL, {cache: 'force-cache'}).then((raw) => raw.text());
+        const recipe = await fetch(recipeURL, {
+            cache: 'force-cache',
+            headers: headers
+        }).then((raw) => raw.text());
         const parsed = parseRecipe(element.path, recipe, repoParams);
         recipes[parsed.meta.slug] = parsed;
     };
