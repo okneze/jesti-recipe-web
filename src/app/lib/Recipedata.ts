@@ -58,6 +58,38 @@ function proxyImageUrl(imagePath: string, recipe: RecipeType): string {
   return `/api/image?${params.toString()}`;
 }
 
+function convertRawGitHubUrlToProxy(imageUrl: string): string | null {
+  // Check if it's a raw.githubusercontent.com URL
+  const match = imageUrl.match(/^https:\/\/raw\.githubusercontent\.com\/([^\/]+)\/([^\/]+)\/([^\/]+)\/(.+)$/);
+  if (match) {
+    const [, author, repository, branch, path] = match;
+    const params = new URLSearchParams({
+      author,
+      repository,
+      branch,
+      path
+    });
+    return `/api/image?${params.toString()}`;
+  }
+  return null;
+}
+
+function processImageUrl(imageUrl: string, recipe: RecipeType): string {
+  // Check if it's a relative path (doesn't start with http)
+  if (!imageUrl.startsWith('http')) {
+    return proxyImageUrl(imageUrl, recipe);
+  }
+  
+  // Check if it's a raw.githubusercontent.com URL that needs proxying
+  const proxyUrl = convertRawGitHubUrlToProxy(imageUrl);
+  if (proxyUrl) {
+    return proxyUrl;
+  }
+  
+  // For other absolute URLs, use them directly
+  return imageUrl;
+}
+
 function getRepositories(): Repository[] {
   const repos: Repository[] = JSON.parse(process.env.REPOSITORIES ?? '[]');
   const repositorySchema = z.object({
@@ -143,15 +175,10 @@ function parseRecipe(path: string, content: string, repository: Repository) {
   const matches = /!\[.*?\]\((.+?)\)|<img.+?src="(.+?)"/g.exec(content);
   if(matches) {
     const imagePath = matches[1] ?? matches[2];
-    // Check if it's a relative path (doesn't start with http)
-    if (!imagePath.startsWith('http')) {
-      recipe.imagePath = proxyImageUrl(imagePath, recipe);
-    } else {
-      recipe.imagePath = imagePath;
-    }
+    recipe.imagePath = processImageUrl(imagePath, recipe);
   }
   return recipe;
 }
 
-export { getRepositories, parseRecipe, rawRoot, getGitHubHeaders, proxyImageUrl };
+export { getRepositories, parseRecipe, rawRoot, getGitHubHeaders, proxyImageUrl, convertRawGitHubUrlToProxy, processImageUrl };
 export type { RecipeType, RecipeList, Repository, RecipeFiles };

@@ -1,5 +1,6 @@
 import Fraction from "fraction.js";
 import { RendererObject, Tokens } from "marked";
+import { convertRawGitHubUrlToProxy } from "./Recipedata";
 // Override function
 
 // HELPERS FROM https://github.com/markedjs/marked/blob/master/src/helpers.ts
@@ -49,12 +50,18 @@ function imageRenderer(root: string, author: string, repository: string, branch:
         });
         imageUrl = `/api/image?${params.toString()}`;
       } else {
-        // For absolute URLs, use them directly
-        const cleanHref = cleanUrl(href);
-        if (cleanHref === null) {
-          return escape(text);
+        // Check if it's a raw.githubusercontent.com URL that needs proxying
+        const proxyUrl = convertRawGitHubUrlToProxy(href);
+        if (proxyUrl) {
+          imageUrl = proxyUrl;
+        } else {
+          // For other absolute URLs, use them directly
+          const cleanHref = cleanUrl(href);
+          if (cleanHref === null) {
+            return escape(text);
+          }
+          imageUrl = cleanHref;
         }
-        imageUrl = cleanHref;
       }
 
       let out = `<img src="${imageUrl}" alt="${text}" onerror="console.info('Broken image: ${imageUrl}'); this.remove()"`;
