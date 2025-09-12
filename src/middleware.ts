@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
+  // Skip auth in development environment
+  if (process.env.NODE_ENV === 'development') {
+    return NextResponse.next();
+  }
+
   // Basic Auth credentials from environment variables
   const basicAuth = request.headers.get('authorization');
   const url = request.nextUrl;
