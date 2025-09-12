@@ -40,12 +40,10 @@
     display: flex;
     align-items: flex-start;
     flex-direction: column;
+}
 
-    & h1 {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
+.title {
+    padding-right: 0.2em;
 }
 
 .icon {
@@ -150,6 +148,10 @@
     width: 40px;
     height: 40px;
     cursor: pointer;
+
+    & svg {
+        margin-bottom: -0.25em;
+    }
 }
 
 @media print {
