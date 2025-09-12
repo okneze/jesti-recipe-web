@@ -137,6 +137,12 @@
     margin-top: 32px;
 }
 
+.instructions {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
+
 .github {
     display: inline;
     margin-left: 0.25em;
