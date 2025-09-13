@@ -6,6 +6,7 @@ import styles from '@/app/styles/App.module.css';
 import "@/app/globals.css";
 import Search from "@/app/components/Search";
 import Shuffle from "./components/Shuffle";
+import AddLink from "./components/AddLink";
 import { SearchProvider } from "@/app/context/search";
 import { SeedProvider } from "./context/seed";
 
@@ -31,6 +32,7 @@ export default function RootLayout({
                     <HouseSVG />
                   </Link>
                   <Shuffle />
+                  <AddLink />
                 </div>
                 <span className={styles.title}>Recipe Web</span>
                 <div className={styles['search-wrapper']}>
