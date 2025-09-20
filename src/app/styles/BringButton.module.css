@@ -1,0 +1,71 @@
+.bringButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--black);
+  color: var(--light-gray);
+  border: 1px solid var(--black);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-family: var(--sans);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 300ms ease;
+  text-decoration: none;
+  
+  /* Ensure consistent sizing */
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.bringButton:hover,
+.bringButton:focus-visible {
+  background: var(--gray);
+  border-color: var(--gray);
+  transform: translateY(-1px);
+  box-shadow: var(--elevation-small);
+}
+
+.bringButton:active {
+  background: var(--black);
+  border-color: var(--black);
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.bringButton:focus-visible {
+  outline: 2px solid var(--gray);
+  outline-offset: 2px;
+}
+
+.bringButton svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+/* Mobile responsiveness */
+@media (width <= 768px) {
+  .bringButton {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+  
+  .bringButton svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (width <= 480px) {
+  .bringButton span {
+    display: none;
+  }
+  
+  .bringButton {
+    padding: 10px;
+    min-width: 44px;
+    justify-content: center;
+  }
+}

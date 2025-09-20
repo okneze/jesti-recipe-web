@@ -15,6 +15,7 @@ import HeartSVG from '../svg/fontawesome/heart';
 import Flag from '@/app/svg/Flag';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { useFavorite } from '../lib/useFavorite';
+import BringButton from './BringButton';
 
 type Props = {
   recipe: RecipeType;
@@ -144,6 +145,9 @@ export default function Recipe({recipe}: Props) {
                 )}
               </div>
               <div className={styles.ingredients} dangerouslySetInnerHTML={{__html: ingredients}}></div>
+              <div className={styles['bring-button-container']}>
+                <BringButton recipe={recipe} multiplier={multiplier} />
+              </div>
             </div>
             <div className={styles.instructions} dangerouslySetInnerHTML={{__html: instructions}}></div>
           </div>
