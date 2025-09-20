@@ -46,20 +46,39 @@ export function extractIngredientsForBring(recipe: RecipeType, multiplier: numbe
 
 /**
  * Creates the Bring import URL following their integration guide
- * Based on the official Bring developer guide, the URL scheme is:
- * https://web.getbring.com/#!/app/lists/YOUR_LIST_ID?items=item1,item2,item3
+ * Since the exact API format isn't clearly documented, we try the most common pattern
  */
 export function createBringImportURL(ingredients: string[], recipeTitle: string): string {
-  // Encode ingredients for URL - each item should be URL encoded
-  const encodedIngredients = ingredients
-    .map(item => encodeURIComponent(item.trim()))
-    .join(',');
+  // Format ingredients as individual parameters (most common pattern)
+  const itemParams = ingredients
+    .map(item => `item=${encodeURIComponent(item.trim())}`)
+    .join('&');
   
-  // Create the Bring web URL that should deep link to the app
-  // This follows the pattern from the Bring developer integration guide
-  const bringURL = `https://web.getbring.com/#!/app/lists?items=${encodedIngredients}&source=${encodeURIComponent(recipeTitle)}`;
+  return `https://web.getbring.com/import?${itemParams}&title=${encodeURIComponent(recipeTitle)}`;
+}
+
+/**
+ * Creates alternative Bring URL formats for testing
+ */
+export function createAlternativeBringURLs(ingredients: string[], recipeTitle: string): string[] {
+  const encodedIngredients = ingredients.map(item => encodeURIComponent(item.trim()));
   
-  return bringURL;
+  return [
+    // Format 1: Comma-separated items
+    `https://web.getbring.com/import?items=${encodedIngredients.join(',')}&title=${encodeURIComponent(recipeTitle)}`,
+    
+    // Format 2: Hash-based routing with individual items
+    `https://web.getbring.com/#!/import?${ingredients.map(item => `item=${encodeURIComponent(item.trim())}`).join('&')}&title=${encodeURIComponent(recipeTitle)}`,
+    
+    // Format 3: Hash-based with comma-separated
+    `https://web.getbring.com/#!/import?items=${encodedIngredients.join(',')}&title=${encodeURIComponent(recipeTitle)}`,
+    
+    // Format 4: Data parameter with newline-separated ingredients
+    `https://web.getbring.com/import?data=${encodeURIComponent(ingredients.join('\n'))}&title=${encodeURIComponent(recipeTitle)}`,
+    
+    // Format 5: List parameter format
+    `https://web.getbring.com/add-items?list=${encodedIngredients.join('&list=')}&source=${encodeURIComponent(recipeTitle)}`
+  ];
 }
 
 /**
@@ -73,7 +92,7 @@ export function createBringWebFallback(ingredients: string[], recipeTitle: strin
 
 /**
  * Triggers the Bring import with proper fallback handling
- * Opens the Bring web interface which will redirect to the app if available
+ * Tries multiple URL formats and provides user feedback
  */
 export function importToBring(recipe: RecipeType, multiplier: number): void {
   const ingredients = extractIngredientsForBring(recipe, multiplier);
@@ -83,10 +102,48 @@ export function importToBring(recipe: RecipeType, multiplier: number): void {
     return;
   }
   
-  const bringURL = createBringImportURL(ingredients, recipe.title);
+  // Get primary and alternative URLs
+  const primaryURL = createBringImportURL(ingredients, recipe.title);
+  const alternativeURLs = createAlternativeBringURLs(ingredients, recipe.title);
   
-  // Open the Bring web URL which should handle app redirection automatically
+  // Log for debugging
+  if (typeof console !== 'undefined') {
+    console.log('Bring Integration Debug:');
+    console.log('Recipe:', recipe.title);
+    console.log('Multiplier:', multiplier);
+    console.log('Extracted ingredients:', ingredients);
+    console.log('Primary URL:', primaryURL);
+    console.log('Alternative URLs:', alternativeURLs);
+  }
+  
   if (typeof window !== 'undefined') {
-    window.open(bringURL, '_blank');
+    // Open the primary URL
+    window.open(primaryURL, '_blank');
+    
+    // Provide user feedback and alternatives
+    setTimeout(() => {
+      const userWantsAlternatives = confirm(
+        `Bring! page opened. If ingredients were not added automatically, click OK to try alternative formats.`
+      );
+      
+      if (userWantsAlternatives) {
+        // Show user a choice of alternatives
+        const choice = prompt(
+          `Choose an alternative format to try:\n` +
+          `1. Comma-separated format\n` +
+          `2. Hash-based individual items\n` +
+          `3. Hash-based comma-separated\n` +
+          `4. Data parameter format\n` +
+          `5. List parameter format\n\n` +
+          `Enter 1-5 or cancel:`
+        );
+        
+        const choiceNum = parseInt(choice || '0') - 1;
+        if (choiceNum >= 0 && choiceNum < alternativeURLs.length) {
+          console.log('Trying alternative URL:', alternativeURLs[choiceNum]);
+          window.open(alternativeURLs[choiceNum], '_blank');
+        }
+      }
+    }, 2000);
   }
 }
