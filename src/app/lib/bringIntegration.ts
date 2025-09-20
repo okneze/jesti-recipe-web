@@ -35,8 +35,13 @@ export function extractIngredientsForBring(recipe: RecipeType, multiplier: numbe
     });
     
     // Remove any remaining markdown formatting and extract plain text
-    return extractTextFromHTML(processedLine.replace(/[*_`]/g, ''));
-  }).filter(item => item.trim()); // Remove empty items
+    let cleanedLine = extractTextFromHTML(processedLine.replace(/[*_`]/g, ''));
+    
+    // Remove list markers (-, *, +) if present at the beginning
+    cleanedLine = cleanedLine.replace(/^\s*[-*+]\s*/, '');
+    
+    return cleanedLine.trim();
+  }).filter(item => item.trim() && !item.match(/^#+\s/)); // Remove empty items and headers
 }
 
 /**

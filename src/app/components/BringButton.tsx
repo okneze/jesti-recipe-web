@@ -12,7 +12,15 @@ type Props = {
  * Bring Button Component
  * 
  * Button that allows users to export the current recipe with adjusted quantities
- * to the Bring! shopping list app
+ * to the Bring! shopping list app. The integration follows the official Bring
+ * developer guide for web-to-app integration.
+ * 
+ * Features:
+ * - Extracts ingredients from RecipeMD format
+ * - Applies current multiplier to ingredient quantities  
+ * - Opens Bring web interface which redirects to app if installed
+ * - Responsive design with mobile-friendly layout
+ * - Accessible with proper ARIA labels
  */
 export default function BringButton({ recipe, multiplier }: Props) {
   const handleBringImport = () => {
