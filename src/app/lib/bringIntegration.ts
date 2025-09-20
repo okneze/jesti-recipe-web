@@ -80,16 +80,8 @@ function parseIngredientLine(line: string, multiplier: number): Ingredient | nul
  * Generates a working Bring! web URL 
  * Using the correct Bring! web app format
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function generateBringUrl(ingredients: Ingredient[]): string {
-  const items = ingredients.map(ingredient => {
-    return ingredient.amount 
-      ? `${ingredient.amount} ${ingredient.name}`
-      : ingredient.name;
-  });
-  
-  // Create a simple text list
-  const itemsText = items.join('\n');
-  
   // Use the actual Bring! web app URL that works
   return `https://getbring.com/#!/app/lists`;
 }
