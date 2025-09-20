@@ -42,23 +42,20 @@ export function extractIngredientsFromMarkdown(ingredientsMarkdown: string, mult
  * Parses a single ingredient line and extracts amount and name
  */
 function parseIngredientLine(line: string, multiplier: number): Ingredient | null {
-  // Remove markdown formatting (bold, italic, etc.)
-  const cleanLine = line.replace(/[*_`]/g, '');
-  
   // Look for amounts in emphasized text (typically between * or _)
   const emphasisMatch = line.match(/[*_]([^*_]+)[*_]/);
   let amount = '';
-  let name = cleanLine;
+  let name = line;
   
   if (emphasisMatch) {
     const rawAmount = emphasisMatch[1];
     // Apply multiplier to the amount
     amount = multiplyAmount(rawAmount, multiplier);
-    // Remove the amount from the name
-    name = cleanLine.replace(emphasisMatch[0], '').trim();
+    // Remove the emphasis markers and the amount from the name
+    name = line.replace(emphasisMatch[0], '').trim();
   } else {
     // If no amount is found in emphasis, try to detect numbers at the beginning
-    const numberMatch = cleanLine.match(/^(\d+(?:[.,\/]\d+)?(?:\s*-\s*\d+(?:[.,\/]\d+)?)?)\s+(.+)/);
+    const numberMatch = line.match(/^(\d+(?:[.,\/]\d+)?(?:\s*-\s*\d+(?:[.,\/]\d+)?)?)\s+(.+)/);
     if (numberMatch) {
       amount = multiplyAmount(numberMatch[1], multiplier);
       name = numberMatch[2];
