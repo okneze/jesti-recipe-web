@@ -78,79 +78,152 @@ function parseIngredientLine(line: string, multiplier: number): Ingredient | nul
 
 /**
  * Generates a Bring! shopping list URL with the ingredients
- * Based on common web-to-app integration patterns
+ * Tries multiple URL formats that are commonly supported
  */
 export function generateBringUrl(ingredients: Ingredient[]): string {
-  // Create ingredient list for Bring!
   const items = ingredients.map(ingredient => {
-    // Format: "amount name" or just "name" if no amount
     return ingredient.amount 
       ? `${ingredient.amount} ${ingredient.name}`
       : ingredient.name;
   });
   
-  // Bring! typically supports URL schemes like bring://add or bring://import
-  // We'll use a flexible approach that works with their web integration
-  const encodedItems = encodeURIComponent(items.join('\n'));
+  const itemsText = items.join('\n');
+  const encodedItems = encodeURIComponent(itemsText);
   
-  // This URL pattern is commonly used by shopping list apps
-  // It should open the Bring! app and add the items
-  return `https://www.getbring.com/#!/app/lists/shared?items=${encodedItems}`;
+  // Use the Bring! web app URL format for importing items
+  return `https://web.getbring.com/#/app/lists/add?text=${encodedItems}`;
 }
 
 /**
- * Alternative function for direct app scheme (if supported)
+ * Generates multiple possible Bring! app URLs to try
  */
-export function generateBringAppUrl(ingredients: Ingredient[]): string {
+export function generateBringAppUrls(ingredients: Ingredient[]): string[] {
   const items = ingredients.map(ingredient => {
     return ingredient.amount 
       ? `${ingredient.amount} ${ingredient.name}`
       : ingredient.name;
   });
   
-  const encodedItems = encodeURIComponent(items.join(','));
-  return `bring://add?items=${encodedItems}`;
+  const itemsText = items.join('\n');
+  const itemsList = items.join(',');
+  const encodedText = encodeURIComponent(itemsText);
+  const encodedList = encodeURIComponent(itemsList);
+  
+  // Try different URL schemes that Bring! might support
+  return [
+    `bring://import?text=${encodedText}`,
+    `bring://add?text=${encodedText}`,
+    `bring://list?items=${encodedList}`,
+    `bring://shopping?list=${encodedList}`,
+    `bring://addItems?items=${encodedList}`,
+    `getbring://import?text=${encodedText}`,
+    `getbring://add?text=${encodedText}`
+  ];
+}
+
+/**
+ * Legacy function for backwards compatibility
+ */
+export function generateBringAppUrl(ingredients: Ingredient[]): string {
+  return generateBringAppUrls(ingredients)[0];
 }
 
 /**
  * Opens Bring! with the ingredient list
- * Tries app scheme first, falls back to web URL
+ * Tries multiple app URL schemes with intelligent fallback
  */
 export function openBringWithIngredients(ingredients: Ingredient[]): void {
-  const appUrl = generateBringAppUrl(ingredients);
+  const appUrls = generateBringAppUrls(ingredients);
   const webUrl = generateBringUrl(ingredients);
   
-  // Try to open the app scheme first
-  const link = document.createElement('a');
-  link.href = appUrl;
-  
-  // Check if the app scheme is supported
   let appOpened = false;
   
-  // Use a timeout to detect if the app opened
-  const timeout = setTimeout(() => {
-    if (!appOpened) {
-      // App didn't open, try web URL
-      window.open(webUrl, '_blank');
+  // First, try a simple direct link approach
+  const tryDirectLink = (url: string) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+  // Try the first few app URLs with direct links
+  appUrls.slice(0, 3).forEach((url, index) => {
+    setTimeout(() => {
+      if (!appOpened) {
+        tryDirectLink(url);
+      }
+    }, index * 300);
+  });
+  
+  // Iframe approach as backup
+  let currentUrlIndex = 3;
+  const tryNextAppUrl = () => {
+    if (currentUrlIndex >= appUrls.length || appOpened) {
+      return;
     }
-  }, 1000);
+    
+    const currentUrl = appUrls[currentUrlIndex];
+    currentUrlIndex++;
+    
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = currentUrl;
+    
+    iframe.onload = () => {
+      setTimeout(() => {
+        if (iframe.parentNode) {
+          document.body.removeChild(iframe);
+        }
+      }, 100);
+    };
+    
+    iframe.onerror = () => {
+      if (iframe.parentNode) {
+        document.body.removeChild(iframe);
+      }
+      setTimeout(tryNextAppUrl, 200);
+    };
+    
+    document.body.appendChild(iframe);
+    
+    setTimeout(() => {
+      if (!appOpened && iframe.parentNode) {
+        document.body.removeChild(iframe);
+        tryNextAppUrl();
+      }
+    }, 600);
+  };
   
-  // Try to open the app
-  link.click();
+  // Start iframe attempts after direct link attempts
+  setTimeout(tryNextAppUrl, 1000);
   
-  // Listen for page visibility change (app opened)
+  // Listen for page visibility/focus changes
   const handleVisibilityChange = () => {
     if (document.hidden) {
       appOpened = true;
-      clearTimeout(timeout);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleBlur);
     }
   };
   
-  document.addEventListener('visibilitychange', handleVisibilityChange);
+  const handleBlur = () => {
+    appOpened = true;
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+    window.removeEventListener('blur', handleBlur);
+  };
   
-  // Clean up after a delay
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  window.addEventListener('blur', handleBlur);
+  
+  // Final fallback to web URL
   setTimeout(() => {
     document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, 3000);
+    window.removeEventListener('blur', handleBlur);
+    
+    if (!appOpened) {
+      window.open(webUrl, '_blank');
+    }
+  }, 3500);
 }
