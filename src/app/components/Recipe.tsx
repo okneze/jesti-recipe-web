@@ -86,10 +86,11 @@ export default function Recipe({recipe}: Props) {
     return adjustMultiplier(`${multiplier - 1 / divisor}`);
   }
 
-  function handleBringIntegration() {
+  async function handleBringIntegration() {
     try {
       const ingredients = extractIngredientsFromMarkdown(recipe.ingredients, multiplier);
-      openBringWithIngredients(ingredients);
+      console.log('Extracted ingredients for Bring!:', ingredients);
+      await openBringWithIngredients(ingredients);
     } catch (error) {
       console.error('Failed to add ingredients to Bring!:', error);
       alert('Fehler beim Hinzufügen der Zutaten zu Bring!');

@@ -78,7 +78,7 @@ function parseIngredientLine(line: string, multiplier: number): Ingredient | nul
 
 /**
  * Generates a Bring! shopping list URL with the ingredients
- * Tries multiple URL formats that are commonly supported
+ * Based on Bring! official web integration
  */
 export function generateBringUrl(ingredients: Ingredient[]): string {
   const items = ingredients.map(ingredient => {
@@ -87,143 +87,177 @@ export function generateBringUrl(ingredients: Ingredient[]): string {
       : ingredient.name;
   });
   
+  // Use Bring!'s web interface for adding items
   const itemsText = items.join('\n');
-  const encodedItems = encodeURIComponent(itemsText);
-  
-  // Use the Bring! web app URL format for importing items
-  return `https://web.getbring.com/#/app/lists/add?text=${encodedItems}`;
+  return `https://web.getbring.com/app/lists/shared?text=${encodeURIComponent(itemsText)}`;
 }
 
 /**
- * Generates multiple possible Bring! app URLs to try
+ * Generates the Bring! app deep link URL
+ * Based on official Bring! deep linking documentation
  */
-export function generateBringAppUrls(ingredients: Ingredient[]): string[] {
+export function generateBringAppUrl(ingredients: Ingredient[]): string {
   const items = ingredients.map(ingredient => {
     return ingredient.amount 
       ? `${ingredient.amount} ${ingredient.name}`
       : ingredient.name;
   });
   
-  const itemsText = items.join('\n');
+  // Use comma-separated format for Bring! app
   const itemsList = items.join(',');
-  const encodedText = encodeURIComponent(itemsText);
-  const encodedList = encodeURIComponent(itemsList);
   
-  // Try different URL schemes that Bring! might support
-  return [
-    `bring://import?text=${encodedText}`,
-    `bring://add?text=${encodedText}`,
-    `bring://list?items=${encodedList}`,
-    `bring://shopping?list=${encodedList}`,
-    `bring://addItems?items=${encodedList}`,
-    `getbring://import?text=${encodedText}`,
-    `getbring://add?text=${encodedText}`
-  ];
+  // Try the official Bring! deep link format
+  return `bring://addtolist?items=${encodeURIComponent(itemsList)}`;
 }
 
 /**
- * Legacy function for backwards compatibility
+ * Copies ingredients to clipboard for manual pasting into Bring!
  */
-export function generateBringAppUrl(ingredients: Ingredient[]): string {
-  return generateBringAppUrls(ingredients)[0];
-}
-
-/**
- * Opens Bring! with the ingredient list
- * Tries multiple app URL schemes with intelligent fallback
- */
-export function openBringWithIngredients(ingredients: Ingredient[]): void {
-  const appUrls = generateBringAppUrls(ingredients);
-  const webUrl = generateBringUrl(ingredients);
-  
-  let appOpened = false;
-  
-  // First, try a simple direct link approach
-  const tryDirectLink = (url: string) => {
-    const link = document.createElement('a');
-    link.href = url;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-  
-  // Try the first few app URLs with direct links
-  appUrls.slice(0, 3).forEach((url, index) => {
-    setTimeout(() => {
-      if (!appOpened) {
-        tryDirectLink(url);
-      }
-    }, index * 300);
+export async function copyIngredientsToClipboard(ingredients: Ingredient[]): Promise<boolean> {
+  const items = ingredients.map(ingredient => {
+    return ingredient.amount 
+      ? `${ingredient.amount} ${ingredient.name}`
+      : ingredient.name;
   });
   
-  // Iframe approach as backup
-  let currentUrlIndex = 3;
-  const tryNextAppUrl = () => {
-    if (currentUrlIndex >= appUrls.length || appOpened) {
-      return;
+  const text = items.join('\n');
+  
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      textArea.style.top = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const result = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      return result;
     }
-    
-    const currentUrl = appUrls[currentUrlIndex];
-    currentUrlIndex++;
-    
+  } catch (error) {
+    console.error('Failed to copy to clipboard:', error);
+    return false;
+  }
+}
+
+/**
+ * Uses Web Share API to share ingredients if available
+ */
+export async function shareIngredients(ingredients: Ingredient[]): Promise<boolean> {
+  const items = ingredients.map(ingredient => {
+    return ingredient.amount 
+      ? `${ingredient.amount} ${ingredient.name}`
+      : ingredient.name;
+  });
+  
+  const text = items.join('\n');
+  
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: 'Rezept Zutaten',
+        text: text
+      });
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Failed to share:', error);
+    return false;
+  }
+}
+
+/**
+ * Opens Bring! with the ingredient list using a direct approach
+ * Tries app first, then provides clear fallback options
+ */
+export async function openBringWithIngredients(ingredients: Ingredient[]): Promise<void> {
+  console.log('Opening Bring! with ingredients:', ingredients);
+  
+  const appUrl = generateBringAppUrl(ingredients);
+  const webUrl = generateBringUrl(ingredients);
+  
+  console.log('Trying Bring! app URL:', appUrl);
+  
+  // Try to open the Bring! app directly
+  try {
+    // Create a hidden iframe to try the app URL
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
-    iframe.src = currentUrl;
+    iframe.src = appUrl;
+    document.body.appendChild(iframe);
     
-    iframe.onload = () => {
-      setTimeout(() => {
-        if (iframe.parentNode) {
-          document.body.removeChild(iframe);
-        }
-      }, 100);
+    // Check if app opened by monitoring page visibility
+    let appOpened = false;
+    
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        appOpened = true;
+        cleanup();
+      }
     };
     
-    iframe.onerror = () => {
+    const cleanup = () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (iframe.parentNode) {
         document.body.removeChild(iframe);
       }
-      setTimeout(tryNextAppUrl, 200);
     };
     
-    document.body.appendChild(iframe);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
     
+    // Wait to see if app opens
     setTimeout(() => {
-      if (!appOpened && iframe.parentNode) {
-        document.body.removeChild(iframe);
-        tryNextAppUrl();
+      cleanup();
+      
+      if (!appOpened) {
+        console.log('App did not open, providing fallback options');
+        showFallbackOptions(ingredients, webUrl);
+      } else {
+        console.log('App opened successfully');
       }
-    }, 600);
-  };
-  
-  // Start iframe attempts after direct link attempts
-  setTimeout(tryNextAppUrl, 1000);
-  
-  // Listen for page visibility/focus changes
-  const handleVisibilityChange = () => {
-    if (document.hidden) {
-      appOpened = true;
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleBlur);
-    }
-  };
-  
-  const handleBlur = () => {
-    appOpened = true;
-    document.removeEventListener('visibilitychange', handleVisibilityChange);
-    window.removeEventListener('blur', handleBlur);
-  };
-  
-  document.addEventListener('visibilitychange', handleVisibilityChange);
-  window.addEventListener('blur', handleBlur);
-  
-  // Final fallback to web URL
-  setTimeout(() => {
-    document.removeEventListener('visibilitychange', handleVisibilityChange);
-    window.removeEventListener('blur', handleBlur);
+    }, 2000);
     
-    if (!appOpened) {
-      window.open(webUrl, '_blank');
+  } catch (error) {
+    console.error('Error trying to open Bring! app:', error);
+    showFallbackOptions(ingredients, webUrl);
+  }
+}
+
+/**
+ * Shows fallback options when the app doesn't open
+ */
+async function showFallbackOptions(ingredients: Ingredient[], webUrl: string): Promise<void> {
+  // Try clipboard copy first
+  try {
+    const copied = await copyIngredientsToClipboard(ingredients);
+    if (copied) {
+      const message = 'Bring! App konnte nicht automatisch geöffnet werden.\n\n' +
+                     'Die Zutaten wurden in die Zwischenablage kopiert!\n\n' +
+                     'Öffne Bring! und füge die Zutaten manuell hinzu:\n' +
+                     '1. Bring! App öffnen\n' +
+                     '2. "+" Button drücken\n' +
+                     '3. Text einfügen (Strg+V)\n\n' +
+                     'Oder soll die Web-Version geöffnet werden?';
+      
+      if (confirm(message)) {
+        window.open(webUrl, '_blank');
+      }
+      return;
     }
-  }, 3500);
+  } catch (error) {
+    console.log('Clipboard copy failed:', error);
+  }
+  
+  // If clipboard fails, just open web version
+  const message = 'Bring! App konnte nicht automatisch geöffnet werden.\n\n' +
+                 'Die Web-Version von Bring! wird geöffnet.';
+  alert(message);
+  window.open(webUrl, '_blank');
 }
