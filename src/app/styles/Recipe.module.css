@@ -127,6 +127,49 @@
     border-radius: 16px;
 }
 
+.ingredients-header {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--light-gray);
+}
+
+.bring-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #00C853;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:focus-visible {
+        outline: 2px solid #004D40;
+        outline-offset: 2px;
+    }
+
+    &:active {
+        background: #00A045;
+    }
+
+    & svg {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+@media (hover: hover) {
+    .bring-btn:hover {
+        background: #00A045;
+    }
+}
+
 .ingredients li:not(:first-child) {
     margin-top: 0.25em;
 }

@@ -12,9 +12,11 @@ import MinusSVG from '@/app/svg/fontawesome/minus';
 import PlusSVG from '@/app/svg/fontawesome/plus';
 import GithubSVG from '@/app/svg/github';
 import HeartSVG from '../svg/fontawesome/heart';
+import BringSVG from '../svg/bring';
 import Flag from '@/app/svg/Flag';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { useFavorite } from '../lib/useFavorite';
+import { extractIngredientsFromMarkdown, openBringWithIngredients } from '../lib/bringIntegration';
 
 type Props = {
   recipe: RecipeType;
@@ -84,6 +86,16 @@ export default function Recipe({recipe}: Props) {
     return adjustMultiplier(`${multiplier - 1 / divisor}`);
   }
 
+  function handleBringIntegration() {
+    try {
+      const ingredients = extractIngredientsFromMarkdown(recipe.ingredients, multiplier);
+      openBringWithIngredients(ingredients);
+    } catch (error) {
+      console.error('Failed to add ingredients to Bring!:', error);
+      alert('Fehler beim Hinzufügen der Zutaten zu Bring!');
+    }
+  }
+
   return (
       <div className={styles.layout}>
         <div className={styles.head}>
@@ -143,7 +155,20 @@ export default function Recipe({recipe}: Props) {
                   </div>
                 )}
               </div>
-              <div className={styles.ingredients} dangerouslySetInnerHTML={{__html: ingredients}}></div>
+              <div className={styles.ingredients}>
+                <div className={styles['ingredients-header']}>
+                  <button 
+                    onClick={handleBringIntegration}
+                    className={styles['bring-btn']}
+                    title="Zutaten zu Bring! hinzufügen"
+                    aria-label="Zutaten zu Bring! hinzufügen"
+                  >
+                    <BringSVG />
+                    <span>Zu Bring!</span>
+                  </button>
+                </div>
+                <div dangerouslySetInnerHTML={{__html: ingredients}}></div>
+              </div>
             </div>
             <div className={styles.instructions} dangerouslySetInnerHTML={{__html: instructions}}></div>
           </div>
