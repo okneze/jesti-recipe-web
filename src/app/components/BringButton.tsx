@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styles from '@/app/styles/BringButton.module.css';
 import { RecipeType } from '@/app/lib/Recipedata';
 
@@ -12,54 +12,46 @@ type Props = {
 /**
  * Bring Button Component
  * 
- * Integrates with Bring! shopping list app using the API deeplink method.
- * Implementation follows the Bring! Import Developer Guide V0.8.0 (Page 4-5).
+ * Integrates with Bring! shopping list app using the official widget.
+ * Implementation follows the Bring! Import Developer Guide V0.8.0 (Pages 1-3).
  * 
- * Uses the alternative integration method: Direct link to Bring API that parses
- * the recipe URL and redirects to the app with a deeplink.
+ * The widget loads from Bring's CDN and handles parsing and import automatically.
  */
 export default function BringButton({ multiplier }: Props) {
-  // Get current page URL for Bring to parse
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
-  
-  // Calculate quantities based on multiplier
-  // Base quantity is 4 (standard serving size)
-  const baseQuantity = 4;
-  const requestedQuantity = Math.round(baseQuantity * multiplier);
-  
-  // Build Bring API deeplink URL (as per official guide page 4-5)
-  const bringUrl = `https://api.getbring.com/rest/bringrecipes/deeplink?url=${encodeURIComponent(currentUrl)}&source=web&baseQuantity=${baseQuantity}&requestedQuantity=${requestedQuantity}`;
+  const widgetRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Load Bring widget script if not already loaded
+    if (typeof window !== 'undefined' && !document.getElementById('bring-widget-script')) {
+      const script = document.createElement('script');
+      script.id = 'bring-widget-script';
+      script.src = '//platform.getbring.com/widgets/import.js';
+      script.async = true;
+      document.head.appendChild(script);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Update requested quantity when multiplier changes
+    if (widgetRef.current) {
+      const baseQuantity = 4;
+      const requestedQuantity = Math.round(baseQuantity * multiplier);
+      widgetRef.current.setAttribute('data-bring-requested-quantity', requestedQuantity.toString());
+    }
+  }, [multiplier]);
 
   return (
-    <a 
-      href={bringUrl}
-      className={styles.bringButton}
-      target="_blank"
-      rel="noopener noreferrer"
-      title="Zutaten zu Bring! Einkaufsliste hinzufügen"
-      aria-label="Zutaten zu Bring! Einkaufsliste hinzufügen"
+    <div 
+      ref={widgetRef}
+      data-bring-import=""
+      data-bring-language="de"
+      data-bring-theme="dark"
+      data-bring-base-quantity="4"
+      data-bring-requested-quantity={Math.round(4 * multiplier).toString()}
+      className={styles.bringButtonContainer}
+      style={{ display: 'none' }}
     >
-      <BringIcon />
-      <span>Zu Bring! hinzufügen</span>
-    </a>
-  );
-}
-
-/**
- * Bring Logo Icon
- */
-function BringIcon() {
-  return (
-    <svg 
-      width="20" 
-      height="20" 
-      viewBox="0 0 24 24" 
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path d="M19 7h-3V6a4 4 0 0 0-8 0v1H5a1 1 0 0 0-1 1v11a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM10 6a2 2 0 0 1 4 0v1h-4V6zm8 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9h2v1a1 1 0 0 0 2 0V9h4v1a1 1 0 0 0 2 0V9h2v10z"/>
-      <circle cx="12" cy="14" r="3" fill="currentColor"/>
-      <path d="M12 12v4M10 14h4" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-    </svg>
+      <a href="https://www.getbring.com">Bring! Einkaufsliste App</a>
+    </div>
   );
 }
