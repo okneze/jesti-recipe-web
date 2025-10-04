@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styles from '@/app/styles/BringButton.module.css';
 import { RecipeType } from '@/app/lib/Recipedata';
 import { multiplyAmount } from '@/app/lib/marked';
@@ -13,10 +13,12 @@ type Props = {
 /**
  * Bring Button Component
  * 
- * Integrates with Bring! shopping list app using their official widget.
- * This implementation follows the standard web-to-app integration pattern.
+ * Integrates with Bring! shopping list app using their widget with data attributes.
+ * Based on the official Bring! import widget pattern.
  */
 export default function BringButton({ recipe, multiplier }: Props) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
     // Load Bring widget script if not already loaded
     if (typeof window !== 'undefined' && !window.document.getElementById('bring-widget-script')) {
@@ -28,49 +30,32 @@ export default function BringButton({ recipe, multiplier }: Props) {
     }
   }, []);
 
-  const handleClick = () => {
-    // Extract and process ingredients
-    const ingredientLines = recipe.ingredients
-      .split('\n')
-      .filter(line => line.trim())
-      .map(line => {
-        // Process amounts marked with asterisks (RecipeMD format)
-        const processedLine = line.replace(/\*([^*]+)\*/g, (match, content) => {
-          return multiplyAmount(content, multiplier);
-        });
-        // Remove markdown formatting
-        return processedLine.replace(/[*_`]/g, '').replace(/^\s*[-*+]\s*/, '').trim();
-      })
-      .filter(item => item.trim() && !item.match(/^#+\s/));
+  // Extract and process ingredients whenever recipe or multiplier changes
+  const ingredientLines = recipe.ingredients
+    .split('\n')
+    .filter(line => line.trim())
+    .map(line => {
+      // Process amounts marked with asterisks (RecipeMD format)
+      const processedLine = line.replace(/\*([^*]+)\*/g, (match, content) => {
+        return multiplyAmount(content, multiplier);
+      });
+      // Remove markdown formatting
+      return processedLine.replace(/[*_`]/g, '').replace(/^\s*[-*+]\s*/, '').trim();
+    })
+    .filter(item => item.trim() && !item.match(/^#+\s/));
 
-    // Prepare data for Bring widget
-    const bringData = {
-      title: recipe.title,
-      items: ingredientLines
-    };
-
-    // Try to use Bring widget if available
-    const windowWithBring = window as Window & { BringWidget?: { addItems: (data: typeof bringData) => void } };
-    if (typeof windowWithBring.BringWidget !== 'undefined') {
-      windowWithBring.BringWidget.addItems(bringData);
-    } else {
-      // Fallback: Use standard URL format
-      const itemParams = ingredientLines
-        .map(item => `item=${encodeURIComponent(item)}`)
-        .join('&');
-      
-      const url = `https://web.getbring.com/import?${itemParams}&title=${encodeURIComponent(recipe.title)}`;
-      window.open(url, '_blank');
-    }
-  };
+  // Format ingredients for data attribute (newline-separated)
+  const ingredientsData = ingredientLines.join('\n');
 
   return (
     <button 
-      className={styles.bringButton}
-      onClick={handleClick}
+      ref={buttonRef}
+      className={`${styles.bringButton} bring-import-button`}
+      data-bring-import="true"
+      data-bring-title={recipe.title}
+      data-bring-items={ingredientsData}
       title="Add ingredients to Bring! shopping list"
       aria-label={`Add ${recipe.title} ingredients to Bring shopping list`}
-      data-bring-title={recipe.title}
     >
       <BringIcon />
       <span>Add to Bring!</span>
