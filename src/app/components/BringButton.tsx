@@ -20,7 +20,6 @@ type Props = {
  */
 export default function BringButton({ recipe, multiplier }: Props) {
   const [isLoading, setIsLoading] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<string[]>([]);
 
   async function handleClick(e: React.MouseEvent) {
     e.preventDefault();
