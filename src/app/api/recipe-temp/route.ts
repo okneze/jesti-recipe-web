@@ -25,23 +25,33 @@ if (typeof global.recipeTokenStore === 'undefined') {
 
 export async function POST(request: NextRequest) {
   try {
-    const { recipeSlug } = await request.json();
+    console.log('[API /api/recipe-temp POST] Received request');
+    
+    const body = await request.json();
+    console.log('[API] Request body:', JSON.stringify(body));
+    
+    const { recipeSlug } = body;
     
     if (!recipeSlug) {
+      console.error('[API] No recipe slug provided');
       return NextResponse.json(
         { error: 'Recipe slug is required' },
         { status: 400 }
       );
     }
 
+    console.log('[API] Recipe slug:', recipeSlug);
+
     // Generate a secure random token
     const token = crypto.randomBytes(32).toString('hex');
+    console.log('[API] Generated token:', token);
     
     // Token expires in 15 minutes
     const expiresAt = Date.now() + 15 * 60 * 1000;
     
     // Store token
     global.recipeTokenStore.set(token, { recipeSlug, expiresAt });
+    console.log('[API] Token stored in memory. Total tokens:', global.recipeTokenStore.size);
     
     // Build the temporary URL using the actual host from request headers
     // This ensures we use the production domain, not localhost
@@ -50,15 +60,29 @@ export async function POST(request: NextRequest) {
     const baseUrl = `${protocol}://${host}`;
     const tempUrl = `${baseUrl}/api/recipe-temp/${token}`;
     
-    return NextResponse.json({
+    console.log('[API] Host detection:');
+    console.log('  - x-forwarded-host:', request.headers.get('x-forwarded-host'));
+    console.log('  - host:', request.headers.get('host'));
+    console.log('  - nextUrl.host:', request.nextUrl.host);
+    console.log('  - Selected host:', host);
+    console.log('  - x-forwarded-proto:', request.headers.get('x-forwarded-proto'));
+    console.log('  - Selected protocol:', protocol);
+    console.log('  - Base URL:', baseUrl);
+    console.log('  - Temporary URL:', tempUrl);
+    
+    const responseData = {
       tempUrl,
       token,
       expiresAt,
       expiresIn: '15 minutes'
-    });
+    };
+    
+    console.log('[API] Returning response:', JSON.stringify(responseData));
+    
+    return NextResponse.json(responseData);
     
   } catch (error) {
-    console.error('Error generating temporary token:', error);
+    console.error('[API] Error generating temporary token:', error);
     return NextResponse.json(
       { error: 'Failed to generate temporary token' },
       { status: 500 }

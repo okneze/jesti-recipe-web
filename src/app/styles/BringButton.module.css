@@ -77,3 +77,71 @@
     justify-content: center;
   }
 }
+
+/* Debug information styling */
+.bringButtonContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.debugInfo {
+  background: #f9f9f9;
+  border: 2px solid #ffcc00;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: var(--mono);
+  font-size: 0.875rem;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.debugInfo h3 {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  color: #333;
+  font-family: var(--sans);
+}
+
+.debugLog {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.debugLine {
+  padding: 4px 0;
+  color: #333;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.debugError {
+  padding: 4px 0;
+  color: #c00;
+  font-weight: bold;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+.debugNote {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #666;
+  font-family: var(--sans);
+}
+
+@media (width <= 768px) {
+  .debugInfo {
+    font-size: 0.75rem;
+  }
+  
+  .debugLog {
+    max-height: 300px;
+  }
+}

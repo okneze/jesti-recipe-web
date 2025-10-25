@@ -15,24 +15,37 @@ export async function GET(
   const params = await context.params;
   const token = params.token;
 
+  console.log('[API /api/recipe-temp/[token] GET] Received request for token:', token);
+  console.log('[API] Token store has', global.recipeTokenStore?.size || 0, 'tokens');
+
   // Validate token
   const tokenData = global.recipeTokenStore?.get(token);
   
   if (!tokenData) {
+    console.error('[API] Token not found in store');
     return new NextResponse('Invalid or expired token', { status: 404 });
   }
 
+  console.log('[API] Token data:', JSON.stringify(tokenData));
+
   if (tokenData.expiresAt < Date.now()) {
+    console.error('[API] Token has expired');
     global.recipeTokenStore.delete(token);
     return new NextResponse('Token has expired', { status: 410 });
   }
 
+  console.log('[API] Token is valid. Fetching recipe:', tokenData.recipeSlug);
+
   try {
     // Fetch the recipe
     const repos = getRepositories();
+    console.log('[API] Searching in', repos.length, 'repositories');
+    
     const headers = getGitHubHeaders();
     
     for (const repository of repos) {
+      console.log(`[API] Checking repository: ${repository.author}/${repository.repository}`);
+      
       const apiUrl = `https://api.github.com/repos/${repository.author}/${repository.repository}/git/trees/${repository.branch}?recursive=1`;
       
       const response = await fetch(apiUrl, {
@@ -40,14 +53,22 @@ export async function GET(
         headers: headers
       });
       
-      if (!response.ok) continue;
+      if (!response.ok) {
+        console.log(`[API] Repository fetch failed with status ${response.status}`);
+        continue;
+      }
       
       const repo: RecipeFiles = await response.json();
-      if (!repo.tree) continue;
+      if (!repo.tree) {
+        console.log('[API] Repository has no tree data');
+        continue;
+      }
 
       const recipeList = repo.tree.filter((node) => 
         node.path.endsWith('.md') && node.path !== 'README.md'
       );
+      
+      console.log(`[API] Found ${recipeList.length} recipe files in repository`);
       
       for (const element of recipeList) {
         const slug = element.path.replace(/\.md$/, '').replace(/\//g, '-');
@@ -55,20 +76,33 @@ export async function GET(
         if (slug !== tokenData.recipeSlug) continue;
         
         // Found the recipe!
+        console.log(`[API] Found matching recipe: ${element.path}`);
+        
         const root = `https://raw.githubusercontent.com/${repository.author}/${repository.repository}/${repository.branch}/`;
         const recipeURL = new URL(element.path, root).href;
+        console.log(`[API] Fetching recipe content from: ${recipeURL}`);
+        
         const recipeResponse = await fetch(recipeURL, {
           next: { revalidate: 300 },
           headers: headers
         });
         
-        if (!recipeResponse.ok) continue;
+        if (!recipeResponse.ok) {
+          console.error(`[API] Recipe fetch failed with status ${recipeResponse.status}`);
+          continue;
+        }
         
         const recipeContent = await recipeResponse.text();
+        console.log(`[API] Fetched recipe content (${recipeContent.length} characters)`);
+        
         const recipe = parseRecipe(element.path, recipeContent, repository);
+        console.log(`[API] Parsed recipe: ${recipe.title}`);
+        console.log(`[API] Ingredients count: ${recipe.ingredients.split('\n').filter((l: string) => l.trim()).length}`);
         
         // Return HTML with schema.org markup for Bring to parse
         const html = generateRecipeHTML(recipe);
+        console.log(`[API] Generated HTML (${html.length} characters)`);
+        console.log('[API] Returning recipe HTML with schema.org markup');
         
         return new NextResponse(html, {
           headers: {
@@ -80,10 +114,11 @@ export async function GET(
       }
     }
     
+    console.error('[API] Recipe not found in any repository');
     return new NextResponse('Recipe not found', { status: 404 });
     
   } catch (error) {
-    console.error('Error serving temporary recipe:', error);
+    console.error('[API] Error serving temporary recipe:', error);
     return new NextResponse('Internal server error', { status: 500 });
   }
 }
