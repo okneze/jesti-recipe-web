@@ -27,14 +27,12 @@ export default function BringButton({ recipe, multiplier }: Props) {
     if (isLoading) return;
     
     setIsLoading(true);
-    const debug: string[] = [];
     
     try {
-      debug.push(`[1] Starting Bring integration for recipe: ${recipe.meta.slug}`);
-      debug.push(`[2] Multiplier: ${multiplier}`);
+      console.log(`Starting Bring integration for recipe: ${recipe.meta.slug}`);
+      console.log(`Multiplier: ${multiplier}`);
       
       // Generate temporary token
-      debug.push(`[3] Requesting temporary token from /api/recipe-temp...`);
       const response = await fetch('/api/recipe-temp', {
         method: 'POST',
         headers: {
@@ -45,87 +43,43 @@ export default function BringButton({ recipe, multiplier }: Props) {
         }),
       });
 
-      debug.push(`[4] Token API response status: ${response.status}`);
-
       if (!response.ok) {
-        const errorText = await response.text();
-        debug.push(`[ERROR] Token API failed: ${errorText}`);
         throw new Error('Failed to generate temporary URL');
       }
 
-      const responseData = await response.json();
-      debug.push(`[5] Token API response: ${JSON.stringify(responseData)}`);
-      
-      const { tempUrl, token } = responseData;
-      debug.push(`[6] Temporary URL: ${tempUrl}`);
-      debug.push(`[7] Token: ${token}`);
+      const { tempUrl } = await response.json();
+      console.log(`Temporary URL generated: ${tempUrl}`);
 
       // Calculate quantities based on multiplier
       const baseQuantity = 4;
       const requestedQuantity = Math.round(baseQuantity * multiplier);
-      debug.push(`[8] Base quantity: ${baseQuantity}, Requested quantity: ${requestedQuantity}`);
 
       // Build Bring API deeplink URL with temporary URL
       const bringUrl = `https://api.getbring.com/rest/bringrecipes/deeplink?url=${encodeURIComponent(tempUrl)}&source=web&baseQuantity=${baseQuantity}&requestedQuantity=${requestedQuantity}`;
-      debug.push(`[9] Bring API URL: ${bringUrl}`);
-      debug.push(`[10] Encoded temp URL in Bring API: ${encodeURIComponent(tempUrl)}`);
-
-      // Show debug info before redirect
-      setDebugInfo(debug);
-      
-      // Wait a moment to show debug info
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      debug.push(`[11] Redirecting to Bring API...`);
-      console.log('=== BRING INTEGRATION DEBUG ===');
-      debug.forEach(line => console.log(line));
-      console.log('===============================');
+      console.log(`Opening Bring API: ${bringUrl}`);
 
       // Open Bring API URL
       window.location.href = bringUrl;
       
     } catch (error) {
-      debug.push(`[ERROR] Exception: ${error}`);
-      setDebugInfo(debug);
-      console.error('=== BRING INTEGRATION ERROR ===');
-      debug.forEach(line => console.log(line));
       console.error('Error creating Bring import:', error);
-      console.error('==============================');
-      alert('Fehler beim Erstellen des Bring! Import-Links. Bitte versuchen Sie es erneut.\n\nDebug-Info in der Browser-Konsole (F12).');
+      alert('Fehler beim Erstellen des Bring! Import-Links. Bitte versuchen Sie es erneut.');
     } finally {
       setIsLoading(false);
     }
   }
 
   return (
-    <div className={styles.bringButtonContainer}>
-      <button 
-        onClick={handleClick}
-        className={styles.bringButton}
-        disabled={isLoading}
-        title="Zutaten zu Bring! Einkaufsliste hinzufügen"
-        aria-label="Zutaten zu Bring! Einkaufsliste hinzufügen"
-      >
-        <BringIcon />
-        <span>{isLoading ? 'Lädt...' : 'Zu Bring! hinzufügen'}</span>
-      </button>
-      
-      {debugInfo.length > 0 && (
-        <div className={styles.debugInfo}>
-          <h3>🔍 Debug Information</h3>
-          <div className={styles.debugLog}>
-            {debugInfo.map((line, index) => (
-              <div key={index} className={line.includes('[ERROR]') ? styles.debugError : styles.debugLine}>
-                {line}
-              </div>
-            ))}
-          </div>
-          <p className={styles.debugNote}>
-            📋 Diese Informationen wurden auch in die Browser-Konsole (F12) geschrieben.
-          </p>
-        </div>
-      )}
-    </div>
+    <button 
+      onClick={handleClick}
+      className={styles.bringButton}
+      disabled={isLoading}
+      title="Zutaten zu Bring! Einkaufsliste hinzufügen"
+      aria-label="Zutaten zu Bring! Einkaufsliste hinzufügen"
+    >
+      <BringIcon />
+      <span>{isLoading ? 'Lädt...' : 'Zu Bring! hinzufügen'}</span>
+    </button>
   );
 }
 
