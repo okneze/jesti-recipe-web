@@ -71,9 +71,16 @@ export async function GET(
       console.log(`[API] Found ${recipeList.length} recipe files in repository`);
       
       for (const element of recipeList) {
-        const slug = element.path.replace(/\.md$/, '').replace(/\//g, '-');
+        // Generate slug formats to match both formats (with slash and with hyphen)
+        const slugWithHyphen = element.path.replace(/\.md$/, '').replace(/\//g, '-');
+        const slugWithSlash = element.path.replace(/\.md$/, '');
+        const fullSlugWithSlash = `${repository.author}/${slugWithHyphen}`;
         
-        if (slug !== tokenData.recipeSlug) continue;
+        console.log(`[API] Checking slug: ${slugWithHyphen}, ${slugWithSlash}, ${fullSlugWithSlash} against ${tokenData.recipeSlug}`);
+        
+        if (slugWithHyphen !== tokenData.recipeSlug && 
+            slugWithSlash !== tokenData.recipeSlug && 
+            fullSlugWithSlash !== tokenData.recipeSlug) continue;
         
         // Found the recipe!
         console.log(`[API] Found matching recipe: ${element.path}`);
