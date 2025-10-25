@@ -43,8 +43,11 @@ export async function POST(request: NextRequest) {
     // Store token
     global.recipeTokenStore.set(token, { recipeSlug, expiresAt });
     
-    // Build the temporary URL
-    const baseUrl = request.nextUrl.origin;
+    // Build the temporary URL using the actual host from request headers
+    // This ensures we use the production domain, not localhost
+    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || request.nextUrl.host;
+    const protocol = request.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
+    const baseUrl = `${protocol}://${host}`;
     const tempUrl = `${baseUrl}/api/recipe-temp/${token}`;
     
     return NextResponse.json({
