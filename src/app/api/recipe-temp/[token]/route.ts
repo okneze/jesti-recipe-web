@@ -130,7 +130,7 @@ export async function GET(
   }
 }
 
-function generateRecipeHTML(recipe: { title: string; meta: { author: string }; yields: string; ingredients: string; instructions: string }): string {
+function generateRecipeHTML(recipe: { title: string; description: string; meta: { author: string }; yields: string; ingredients: string; instructions: string }): string {
   // Extract plain text ingredients from markdown
   const ingredients = recipe.ingredients
     .split('\n')
@@ -144,29 +144,57 @@ function generateRecipeHTML(recipe: { title: string; meta: { author: string }; y
         .trim();
     });
 
+  // Extract plain text from description (remove HTML tags if any)
+  const plainDescription = recipe.description
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim() || recipe.title;
+
+  // Extract plain text from instructions
+  const plainInstructions = recipe.instructions
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Escape HTML entities
+  const escapeHtml = (str: string) => str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
   return `<!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>${recipe.title}</title>
+    <title>${escapeHtml(recipe.title)}</title>
 </head>
-<body itemscope itemtype="https://schema.org/Recipe">
-    <h1 itemprop="name">${recipe.title}</h1>
-    <p>Von: <span itemprop="author">${recipe.meta.author}</span></p>
-    <meta itemprop="recipeYield" content="${recipe.yields}" />
-    
-    <h2>Zutaten:</h2>
-    <ul>
-        ${ingredients.map((ingredient: string) => 
-          `<li><meta itemprop="recipeIngredient" content="${ingredient}" />${ingredient}</li>`
-        ).join('\n        ')}
-    </ul>
-    
-    <div itemprop="recipeInstructions">
-        <h2>Zubereitung:</h2>
-        ${recipe.instructions}
+<body>
+    <div itemscope itemtype="https://schema.org/Recipe">
+        <h1 itemprop="name">${escapeHtml(recipe.title)}</h1>
+        
+        <p itemprop="description">${escapeHtml(plainDescription)}</p>
+        
+        <p>Von: <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+            <span itemprop="name">${escapeHtml(recipe.meta.author)}</span>
+        </span></p>
+        
+        <p><span itemprop="recipeYield">${escapeHtml(recipe.yields)}</span> Portionen</p>
+        
+        <h2>Zutaten:</h2>
+        <ul>
+            ${ingredients.map((ingredient: string) => 
+              `<li itemprop="recipeIngredient">${escapeHtml(ingredient)}</li>`
+            ).join('\n            ')}
+        </ul>
+        
+        <div itemprop="recipeInstructions">
+            <h2>Zubereitung:</h2>
+            <p>${escapeHtml(plainInstructions)}</p>
+        </div>
     </div>
     
     <p><em>Dieser Link ist temporär und läuft in 15 Minuten ab.</em></p>
