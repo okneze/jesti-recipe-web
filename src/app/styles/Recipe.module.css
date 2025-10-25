@@ -131,6 +131,12 @@
     margin-top: 0.25em;
 }
 
+.bring-button-container {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 16px;
+}
+
 .instructions-container {
     display: flex;
     gap: 32px;

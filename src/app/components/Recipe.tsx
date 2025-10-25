@@ -15,6 +15,7 @@ import HeartSVG from '../svg/fontawesome/heart';
 import Flag from '@/app/svg/Flag';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { useFavorite } from '../lib/useFavorite';
+import BringButton from './BringButton';
 
 type Props = {
   recipe: RecipeType;
@@ -85,16 +86,16 @@ export default function Recipe({recipe}: Props) {
   }
 
   return (
-      <div className={styles.layout}>
+      <div className={styles.layout} itemScope itemType="https://schema.org/Recipe">
         <div className={styles.head}>
           <h1>
             <a href={`https://github.com/${recipe.meta.author}/${recipe.meta.repository}/blob/${recipe.meta.branch}/${recipe.meta.path}`} target='_blank' rel='noreferrer'>
-              {recipe.title}
+              <span itemProp="name">{recipe.title}</span>
               <GithubSVG aria-hidden="true" className={styles.github} />
             </a>
             <button onClick={toggleFavorite} aria-pressed={isFavorite()} title={isFavorite() ? 'Remove favorite' : 'Add favorite'} className={styles.favorite}><HeartSVG filled={isFavorite()} /></button>
           </h1>
-          <a className={styles.author} href={`/${recipe.meta.author}`}>@{recipe.meta.author}</a>
+          <a className={styles.author} href={`/${recipe.meta.author}`}><span itemProp="author">@{recipe.meta.author}</span></a>
           <div className={styles.tags}>
             {recipe.tags.map((tag, idx) => (<a href={`/?tag=${tag}`} key={idx} className={styles.tag}>{tag}</a>))}
             <div className={styles.flag}><Flag code={recipe.language} /></div>
@@ -105,6 +106,7 @@ export default function Recipe({recipe}: Props) {
           <div className={styles['instructions-container']}>
             <div className={styles['yields-and-ingredients']}>
               <div className={styles.yields}>
+                <meta itemProp="recipeYield" content={recipe.yields} />
                 {yields.map((value, idx) => {
                   const yieldsItem = splitAmountUnit(value);
 
@@ -143,9 +145,22 @@ export default function Recipe({recipe}: Props) {
                   </div>
                 )}
               </div>
-              <div className={styles.ingredients} dangerouslySetInnerHTML={{__html: ingredients}}></div>
+              <div className={styles.ingredients}>
+                {/* Schema.org markup for ingredients */}
+                {recipe.ingredients.split('\n').filter(line => line.trim()).map((ingredient, idx) => {
+                  // Extract plain text from ingredient line (remove markdown)
+                  const plainIngredient = ingredient.replace(/\*([^*]+)\*/g, '$1').replace(/[*_`]/g, '').replace(/^\s*[-*+]\s*/, '').trim();
+                  return <meta key={idx} itemProp="recipeIngredient" content={plainIngredient} />;
+                })}
+                <div dangerouslySetInnerHTML={{__html: ingredients}}></div>
+              </div>
+              <div className={styles['bring-button-container']}>
+                <BringButton recipe={recipe} multiplier={multiplier} />
+              </div>
             </div>
-            <div className={styles.instructions} dangerouslySetInnerHTML={{__html: instructions}}></div>
+            <div className={styles.instructions}>
+              <div itemProp="recipeInstructions" dangerouslySetInnerHTML={{__html: instructions}}></div>
+            </div>
           </div>
         </div>
       </div>
