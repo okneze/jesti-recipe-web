@@ -24,7 +24,7 @@ Key characteristics:
 | Technology | Version | Role |
 |---|---|---|
 | TypeScript | 5.9.3 | Primary language (81% of codebase) |
-| Next.js | 15.5.15 | Full-stack React framework (App Router) |
+| Next.js | 15.5.29 | Full-stack React framework (App Router) |
 | React | 19.x | UI rendering |
 | CSS Modules | — | Component-scoped styling (18.6% of codebase) |
 | ESLint | 9.x | Linting (`eslint-config-next`) |
